@@ -6,10 +6,11 @@ import { CreateCarMainInfoRequest } from "@/schemas/car/add-car-main-details.sch
 export const carsApi = combinedBaseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllCars: builder.query<
-      SuccessResponse<{ cars: ICarDetails[]; pagination: IPagination }>,
+      SuccessResponse<ICarDetails[]>,
       { page: number; search: string }
     >({
-      query: ({ page, search }) => `/cars?page=${page}&search=${search}`,
+      query: ({ page, search }) =>
+        `/cars?page=${page}&limit=10&search=${search}&sortBy=createdAt&sortOrder=desc&draftFilter=all`,
       providesTags: ["Car"],
     }),
 
@@ -36,7 +37,7 @@ export const carsApi = combinedBaseApi.injectEndpoints({
     // Update car main info (for drafts)
     updateCarMainInfo: builder.mutation<
       SuccessResponse,
-      { id: number; data: FormData }
+      { id: string; data: FormData }
     >({
       query: ({ id, data }) => ({
         url: `/cars/${id}/main-info`,
@@ -49,31 +50,32 @@ export const carsApi = combinedBaseApi.injectEndpoints({
     // get single Car by id
     getSingleCarById: builder.query<
       SuccessResponse<{ car: ICarDetails }>,
-      number
+      string
     >({
       query: (id) => `/cars/dashboard/details/${id}`,
       providesTags: ["Car"],
     }),
 
     // Get car main info by ID
-    getCarMainInfo: builder.query<SuccessResponse, number>({
+    getCarMainInfo: builder.query<SuccessResponse, string>({
       query: (id) => `/cars/${id}/main-info`,
       providesTags: ["Car"],
     }),
 
     // Get draft cars
     getDraftCars: builder.query<
-      SuccessResponse<{ draftCars: IDraftCar[]; pagination: IPagination }>,
+      SuccessResponse<ICarDetails[]>,
       { page: number; search: string }
     >({
-      query: ({ page, search }) => `/cars/drafts?page=${page}&search=${search}`,
+      query: ({ page, search }) =>
+        `/cars?page=${page}&limit=10&search=${search}&sortBy=createdAt&sortOrder=desc&draftFilter=draft`,
       providesTags: ["Car"],
     }),
 
     // Update car specifications
     updateCarSpecifications: builder.mutation<
       SuccessResponse,
-      { id: number; modelVariants: string }
+      { id: string; modelVariants: string }
     >({
       query: ({ id, modelVariants }) => ({
         url: `/cars/${id}/car-specs`,
@@ -84,7 +86,7 @@ export const carsApi = combinedBaseApi.injectEndpoints({
     }),
 
     // Get car specifications
-    getCarSpecifications: builder.query<SuccessResponse<any>, number>({
+    getCarSpecifications: builder.query<SuccessResponse<any>, string>({
       query: (id) => `/cars/${id}/car-specs`,
       providesTags: ["Car"],
     }),
@@ -92,7 +94,7 @@ export const carsApi = combinedBaseApi.injectEndpoints({
     // Update SEO info
     updateSeoInfo: builder.mutation<
       SuccessResponse,
-      { id: number; seoData: any }
+      { id: string; seoData: any }
     >({
       query: ({ id, seoData }) => ({
         url: `/cars/${id}/seo-info`,
@@ -103,19 +105,19 @@ export const carsApi = combinedBaseApi.injectEndpoints({
     }),
 
     // Get SEO info
-    getSeoInfo: builder.query<SuccessResponse<any>, number>({
+    getSeoInfo: builder.query<SuccessResponse<any>, string>({
       query: (id) => `/cars/${id}/seo-info`,
       providesTags: ["Car"],
     }),
 
     // Get complete car details
-    getCarDetails: builder.query<SuccessResponse<ICarDetails>, number>({
+    getCarDetails: builder.query<SuccessResponse<ICarDetails>, string>({
       query: (id) => `/cars/details/${id}`,
       providesTags: ["Car"],
     }),
 
     // Delete car
-    deleteCar: builder.mutation<SuccessResponse, number>({
+    deleteCar: builder.mutation<SuccessResponse, string>({
       query: (id) => ({
         url: `/cars/${id}`,
         method: "DELETE",

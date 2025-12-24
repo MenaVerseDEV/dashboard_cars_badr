@@ -1,26 +1,43 @@
 import { combinedBaseApi, SuccessResponse } from "@/redux/app/baseApi";
 import { IPagination } from "@/types";
-import { IAddVariantDto, ICategoryVariants } from "@/types/variant";
+import { IAddVariantDto, ICategoryVariants, ISpec } from "@/types/variant";
 
 const variantApi = combinedBaseApi.injectEndpoints({
   endpoints: (builder) => ({
     // ########### variant Categories ###########
     // get all variants categories with variants
     getAllVariantCategories: builder.query<
-      SuccessResponse<{
-        variants: ICategoryVariants[];
-      }>,
+      SuccessResponse<ICategoryVariants[]>,
       void
     >({
       query: () => ({
-        url: `variant/variant`,
+        url: `/specs?limit=100`, // Fetch all to group them
       }),
+      transformResponse: (response: SuccessResponse<ISpec[]>) => {
+        const grouped: { [key: string]: ICategoryVariants } = {};
+
+        response.data.forEach((spec) => {
+          const categoryId = spec.categoryId;
+          if (!grouped[categoryId]) {
+            grouped[categoryId] = {
+              category: spec.category,
+              variants: [],
+            };
+          }
+          grouped[categoryId].variants.push(spec);
+        });
+
+        return {
+          ...response,
+          data: Object.values(grouped),
+        } as any;
+      },
       providesTags: ["Variant"],
     }),
     // add variant category
     addVariantCategory: builder.mutation<SuccessResponse, FormData>({
       query: (data) => ({
-        url: `variant/variant-category`,
+        url: `/spec-categories`,
         method: "POST",
         body: data,
       }),
@@ -32,7 +49,7 @@ const variantApi = combinedBaseApi.injectEndpoints({
       { id: string; data: FormData }
     >({
       query: (data) => ({
-        url: `variant/variant-category/${data.id}`,
+        url: `/spec-categories/${data.id}`,
         method: "PATCH",
         body: data?.data,
       }),
@@ -42,7 +59,7 @@ const variantApi = combinedBaseApi.injectEndpoints({
     // delete variant category
     deleteVariantCategory: builder.mutation<SuccessResponse, string>({
       query: (id) => ({
-        url: `variant/variant-category/${id}`,
+        url: `/spec-categories/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Variant"],
@@ -52,7 +69,7 @@ const variantApi = combinedBaseApi.injectEndpoints({
     // add variant
     addVariant: builder.mutation<SuccessResponse, FormData>({
       query: (data) => ({
-        url: `variant/variant`,
+        url: `/specs`,
         method: "POST",
         body: data,
       }),
@@ -64,7 +81,7 @@ const variantApi = combinedBaseApi.injectEndpoints({
       { id: string; data: FormData }
     >({
       query: (data) => ({
-        url: `variant/variant/${data.id}`,
+        url: `/specs/${data.id}`,
         method: "PATCH",
         body: data?.data,
       }),
@@ -73,7 +90,7 @@ const variantApi = combinedBaseApi.injectEndpoints({
     // delete variant
     deleteVariant: builder.mutation<SuccessResponse, string>({
       query: (id) => ({
-        url: `variant/variant/${id}`,
+        url: `/specs/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Variant"],

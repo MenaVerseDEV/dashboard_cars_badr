@@ -1,31 +1,29 @@
-export interface ICustomPermissions {
-  read: boolean;
-  create: boolean;
-  delete: boolean;
-  module: string;
-  update: boolean;
-}
-export interface IAdminDTO {
-  username: string;
+export interface IAdmin {
+  id: string;
   email: string;
-  password?: string;
-  customPermissions: ICustomPermissions[];
+  name: string;
+  phone: string;
+  permissions: string[];
 }
 
 export interface LoginDTO {
-  username: string;
+  email: string;
   password: string;
 }
 
-export interface IAdmin {
-  id: string;
-  username: string;
-  customPermissions: ICustomPermissions[];
+export interface IAdminDTO {
+  name: string;
   email: string;
-  createdAt: string;
+  password?: string;
+  permissions: string[];
 }
 
 export interface IAuthState {
   admin: IAdmin | null;
   token: string | null;
+}
+
+export interface ILoginResponse {
+  access_token: string;
+  user: IAdmin;
 }

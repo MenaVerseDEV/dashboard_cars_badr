@@ -73,7 +73,7 @@ export default function VaraintsHierarchicalForm() {
             </PermissionCondition>
           </div>
 
-          {variantCategories?.data?.variants?.length === 0 && (
+          {variantCategories?.data?.length === 0 && (
             <div className="text-center py-8 text-muted-foreground">
               {language === "en"
                 ? "No variants added yet. Click the 'Add Variant' button to get started."
@@ -86,7 +86,7 @@ export default function VaraintsHierarchicalForm() {
             <TreeViewSkeleton />
           ) : (
             <TreeView
-              variants={variantCategories?.data?.variants ?? []}
+              variants={variantCategories?.data ?? []}
               language={language}
             />
           )}
@@ -116,4 +116,3 @@ export default function VaraintsHierarchicalForm() {
     </div>
   );
 }
-

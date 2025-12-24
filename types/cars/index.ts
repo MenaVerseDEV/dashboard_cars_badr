@@ -42,47 +42,71 @@ type Category = {
 };
 
 export interface ICarDetails {
-  id: number;
-  name: ILang;
-  video: {
-    id: number;
-  };
-  carName: ILang;
-  status: string;
-  interior_iframe: string;
-  price: string;
-  hasOffer: boolean;
-  offer: number;
-  priceAfterOffer: string;
-  mainImage: string;
-  views: number;
-  iframe_360: string;
-  images: Images;
-  slug: ILang;
-  mainInfo: MainInfoItem[];
-  year: number;
-  createdAt: string; // ISO8601 DateTime
-  updatedAt: string; // ISO8601 DateTime
-  categories: Category[];
+  id: string;
+  name: string;
+  description: string;
+  slug: string;
+  draft: boolean;
   metaTitle: ILang;
   metaDescription: ILang;
-  metaKeywords: string[];
-  mainVideo: string;
+  metaKeywords: string;
+  mainImage: string;
+  interiorImages: string[];
+  exteriorImages: string[];
+  price: number;
+  createdAt: string;
+  updatedAt: string;
+  modelId: string;
+  model: {
+    id: string;
+    name: string;
+    year: number;
+    createdAt: string;
+    updatedAt: string;
+    brandId: string;
+    modelTypeId: string;
+    brand: {
+      id: string;
+      name: string;
+      image: string | null;
+      createdAt: string;
+      updatedAt: string;
+    };
+    modelType: {
+      id: string;
+      name: string;
+      createdAt: string;
+      updatedAt: string;
+    };
+  };
+  specsCategories?: {
+    name: string;
+    specs: {
+      name: string;
+      value: ILang;
+    }[];
+  }[];
 }
 
 // car brands
 export interface ICarBrand {
-  id: number;
+  id: string;
   name: string;
-  image: string;
-  description?: string;
+  image: string | null;
+  createdAt: string;
+  updatedAt: string;
+  _count?: {
+    models: number;
+  };
 }
 
 export interface ISingleBrand {
-  id: number;
+  id: string;
   name: ILang;
-  image: string;
+  image: string | null;
   description?: ILang;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // cars comparasion details
@@ -111,7 +135,7 @@ export interface ICarFillter {
 
 // draft cars
 export interface IDraftCar {
-  id: number;
+  id: string;
   name: ILang;
   carName: ILang;
   model: {

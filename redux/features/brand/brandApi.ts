@@ -4,31 +4,23 @@ import { ICarBrand, ISingleBrand } from "@/types/cars";
 
 const brandApi = combinedBaseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getAllBrandts: builder.query<
-      SuccessResponse<{
-        brands: {
-          brands: ICarBrand[];
-          pagination: IPagination;
-        };
-      }>,
-      { page: number; search: string; limit: number }
+    getAllBrands: builder.query<
+      SuccessResponse<ICarBrand[]>,
+      { page: number; limit: number }
     >({
-      query: ({ page, search, limit }) => `/brand?page=${page}&search=${search}&limit=${limit}`,
+      query: ({ page, limit }) => `/brands?page=${page}&limit=${limit}`,
       providesTags: ["Brand"],
     }),
     // get brand by id
-    getBrandById: builder.query<
-      SuccessResponse<{ brand: ISingleBrand }>,
-      number
-    >({
-      query: (id) => `/brand/${id}`,
+    getBrandById: builder.query<SuccessResponse<ISingleBrand>, string>({
+      query: (id) => `/brands/${id}`,
       providesTags: ["Brand"],
     }),
 
     // add brand
     addBrand: builder.mutation<SuccessResponse, FormData>({
       query: (data) => ({
-        url: `/brand`,
+        url: `/brands`,
         method: "POST",
         body: data,
       }),
@@ -38,10 +30,10 @@ const brandApi = combinedBaseApi.injectEndpoints({
     // update brand
     updateBrand: builder.mutation<
       SuccessResponse,
-      { id: number; brand: FormData }
+      { id: string; brand: FormData }
     >({
       query: ({ id, brand }) => ({
-        url: `/brand/${id}`,
+        url: `/brands/${id}`,
         method: "PATCH",
         body: brand,
       }),
@@ -51,7 +43,7 @@ const brandApi = combinedBaseApi.injectEndpoints({
     // delete brand
     deleteBrand: builder.mutation<SuccessResponse, string>({
       query: (id) => ({
-        url: `/brand/${id}`,
+        url: `/brands/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Brand"],
@@ -60,7 +52,7 @@ const brandApi = combinedBaseApi.injectEndpoints({
 });
 
 export const {
-  useGetAllBrandtsQuery,
+  useGetAllBrandsQuery,
   useGetBrandByIdQuery,
   useAddBrandMutation,
   useUpdateBrandMutation,

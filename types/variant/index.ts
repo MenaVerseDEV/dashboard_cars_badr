@@ -1,33 +1,36 @@
 import { ILangObject } from "..";
 
-// add variants
-type Variant = {
+export interface ISpecCategory {
   id: string;
-  name: ILangObject;
-  image: string;
-  values: string[];
-};
-
-type Category = {
-  id: string;
-  name: ILangObject;
-  image: string;
-};
-
-export type ICategoryVariants = {
-  category: Category;
-  variants: Variant[];
-};
-
-export interface IVariant {
-  variantCategories: {
-    id: number;
-    name: string;
-  }[];
+  name: string; // The API seems to return string based on locale
+  image?: string | null;
 }
 
+export interface ISpec {
+  id: string;
+  name: string;
+  description?: string | null;
+  image?: string | null;
+  values: {
+    ar: string[];
+    en: string[];
+  };
+  createdAt: string;
+  updatedAt: string;
+  categoryId: string;
+  category: ISpecCategory;
+}
+
+export type ICategoryVariants = {
+  category: ISpecCategory;
+  variants: ISpec[];
+};
+
 export interface IAddVariantDto {
-  name: ILangObject;
-  variantCategoryId: number;
-  values: string[];
+  name: string;
+  variantCategoryId: string;
+  values: {
+    ar: string[];
+    en: string[];
+  };
 }

@@ -19,14 +19,14 @@ import {
 } from "@/redux/features/brand/brandApi";
 import { handleReqWithToaster } from "@/components/shared/handleReqWithToaster";
 
-export function AddBrandDialog({ id }: { id?: number }) {
+export function AddBrandDialog({ id }: { id?: string }) {
   const [open, setOpen] = useState(false);
   const [brandNameAr, setBrandNameAr] = useState("");
   const [brandNameEn, setBrandNameEn] = useState("");
   const [logo, setLogo] = useState<File | null>(null);
-  const [logoPreview, setLogoPreview] = useState<string>("");
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
-  const { data: brand, isLoading: loadBrand } = useGetBrandByIdQuery(id ?? 0, {
+  const { data: brand, isLoading: loadBrand } = useGetBrandByIdQuery(id ?? "", {
     skip: !id,
   });
   const [addBrand, { isLoading }] = useAddBrandMutation();
@@ -42,7 +42,7 @@ export function AddBrandDialog({ id }: { id?: number }) {
       };
       reader.readAsDataURL(file);
     } else {
-      setLogoPreview("");
+      setLogoPreview(null);
     }
   };
 
@@ -53,7 +53,7 @@ export function AddBrandDialog({ id }: { id?: number }) {
     if (logo) formData.append("image", logo);
 
     handleReqWithToaster(
-      id ? "جاي تعديل ماركة" : "جاي إضافة ماركة",
+      id ? "جاري تعديل ماركة" : "جاري إضافة ماركة",
       async () => {
         if (id) {
           await updateBrand({ id, brand: formData }).unwrap();
@@ -63,16 +63,17 @@ export function AddBrandDialog({ id }: { id?: number }) {
         setBrandNameAr("");
         setBrandNameEn("");
         setLogo(null);
-        setLogoPreview("");
+        setLogoPreview(null);
         setOpen(false);
       }
     );
   };
+
   useEffect(() => {
-    if (brand?.data?.brand) {
-      setBrandNameAr(brand?.data?.brand?.name.ar);
-      setBrandNameEn(brand.data.brand.name.en);
-      setLogoPreview(brand.data.brand.image);
+    if (brand?.data) {
+      setBrandNameAr(brand.data.name.ar);
+      setBrandNameEn(brand.data.name.en);
+      setLogoPreview(brand.data.image);
     }
   }, [brand]);
   return (
@@ -170,4 +171,3 @@ export function AddBrandDialog({ id }: { id?: number }) {
     </Dialog>
   );
 }
-

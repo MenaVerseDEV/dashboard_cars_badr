@@ -1,5 +1,5 @@
 import { Locale } from "@/i18n/routing";
-import { ICustomPermissions } from "@/types/auth";
+import { IAdmin } from "@/types/auth";
 import { renderLocaleContent } from "@/utils/render-locale-content.util";
 import {
   Home,
@@ -29,7 +29,7 @@ interface ISidebarItem {
 
 export const useMainNavItems = ({ pathname }: { pathname: string }) => {
   const locale = useLocale() as Locale;
-  const isExactActive = (url: string) => pathname === `/$${url}`;
+  const isExactActive = (url: string) => pathname === `/${url}`;
   const isStartsWithActive = (url: string) =>
     pathname.startsWith(`/${locale}${url}`);
 
@@ -48,24 +48,32 @@ export const useMainNavItems = ({ pathname }: { pathname: string }) => {
         {
           title: renderLocaleContent(locale, "عرض السيارات", "All cars"),
           url: "/cars",
-          permission: "سيارات",
-          permissionType: "read",
         },
         {
           title: renderLocaleContent(locale, "إضافة سيارة", "Add new car"),
           url: "/cars/add",
-          permission: "سيارات",
+          permission: "cars",
           permissionType: "create",
         },
         {
           title: renderLocaleContent(locale, "إدارة الماركات", "Manage brands"),
           url: "/cars/brands",
-          permission: "سيارات",
+          permission: "brands",
           permissionType: "read",
         },
         {
           title: renderLocaleContent(locale, "المسودات", "Drafts"),
           url: "/cars/drafts",
+        },
+        {
+          title: renderLocaleContent(
+            locale,
+            "إدارة المواصفات",
+            "Manage variants"
+          ),
+          url: "/cars/variants",
+          permission: "سيارات",
+          permissionType: "read",
         },
       ],
     },
@@ -76,19 +84,12 @@ export const useMainNavItems = ({ pathname }: { pathname: string }) => {
 
 export const filterNavItemsByPermissions = (
   items: ISidebarItem[],
-  adminPermissions: ICustomPermissions[]
+  adminPermissions: string[]
 ): ISidebarItem[] => {
   const hasPermission = (
-    permission?: string,
-    permissionType?: "read" | "create" | "delete" | "update"
-  ) => {
-    if (!permission || !permissionType) return true;
-
-    const found = adminPermissions.find(
-      (perm) => perm.module === permission && perm[permissionType]
-    );
-    return !!found;
-  };
+    _permission?: string,
+    _permissionType?: "read" | "create" | "delete" | "update"
+  ) => true;
 
   const filterChildren = (
     children: Omit<ISidebarItem, "Icon" | "isActive">[]

@@ -1,31 +1,31 @@
 import { ILangObject } from "..";
 
 export interface IModel {
-  id: number;
+  id: string;
   name: string;
   modelType: {
-    id: number;
+    id: string;
     name: string;
   };
   year: number;
 }
 
 export interface ISingleModel {
-  id: number;
+  id: string;
   name: ILangObject;
   modelType: {
-    id: number;
+    id: string;
     name: string;
   };
   year: number;
 }
 export interface ICreateModelDto {
   name: ILangObject;
-  modelTypeId: number;
+  modelTypeId: string;
   year: number;
-  brandId: number;
+  brandId: string;
 }
 export interface IModelType {
-  id: number;
+  id: string;
   name: string;
 }

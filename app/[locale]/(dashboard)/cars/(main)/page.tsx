@@ -36,7 +36,7 @@ export default function Cars() {
   const commonT = useTranslations("Common");
   const [deleteCar, { isLoading: isDeleting }] = useDeleteCarMutation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [carToDelete, setCarToDelete] = useState<number | null>(null);
+  const [carToDelete, setCarToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     document.title = `${t("title")} | Portal Dashboard`;
@@ -46,7 +46,7 @@ export default function Cars() {
     }
   }, [t]);
 
-  const handleDeleteCar = (carId: number) => {
+  const handleDeleteCar = (carId: string) => {
     setCarToDelete(carId);
     setDeleteDialogOpen(true);
   };
@@ -137,7 +137,7 @@ export default function Cars() {
       {/* Table Section */}
       <div className="p-6 bg-white rounded-[32px] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden">
         <DataTable
-          data={data?.data?.cars ?? []}
+          data={data?.data ?? []}
           columns={columns}
           searchFunctions={{
             search,
@@ -145,11 +145,11 @@ export default function Cars() {
           }}
           isLoading={isLoading}
           Pagenation={{
-            curentPage: data?.data?.pagination?.page ?? 1,
-            totalPages: data?.data?.pagination?.totalPages ?? 1,
+            curentPage: page,
+            totalPages: Math.ceil((data?.data?.length || 0) / 10), // Fallback since API lacks total count
             link: `/${locale}/cars`,
-            totalItems: data?.data?.pagination?.totalCounts,
-            pageSize: data?.data?.pagination?.limit,
+            totalItems: data?.data?.length,
+            pageSize: 10,
           }}
         />
       </div>

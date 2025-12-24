@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/collapsible";
 import { ADMIN_COOKIE } from "@/constants";
 import { getCookie } from "cookies-next";
-import { IAdmin, ICustomPermissions } from "@/types/auth";
+import { IAdmin } from "@/types/auth";
 
 type Props = {
   toggleMobileSidebar: () => void;
@@ -35,8 +35,8 @@ function CustomSidebar({
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
   const adminCookie = getCookie(ADMIN_COOKIE) as string | undefined;
   const allItems = useMainNavItems({ pathname });
-  const adminCustomPermissions: ICustomPermissions[] = adminCookie
-    ? JSON.parse(adminCookie)?.customPermissions
+  const adminCustomPermissions: string[] = adminCookie
+    ? (JSON.parse(adminCookie) as IAdmin)?.permissions
     : [];
 
   const filteredItems = filterNavItemsByPermissions(

@@ -13,19 +13,19 @@ import TextFormEle from "@/components/ui/form/text-form-element";
 import { Form } from "@/components/ui/form";
 
 export const LoginSchema = z.object({
-  username: z.string(),
-  password: z.string(),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 const translations = {
   en: {
     login: "Login",
-    username: "Username",
+    email: "Email",
     password: "Password",
   },
   ar: {
     login: "تسجيل الدخول",
-    username: "اسم المستخدم",
+    email: "البريد الإلكتروني",
     password: "كلمة المرور",
   },
 };
@@ -38,12 +38,16 @@ export default function LoginForm() {
 
   const form = useForm<ILoginForm>({
     resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
   const onSubmit = async (values: ILoginForm) => {
     handleReqWithToaster("يتم تسجيل الدخول", async () => {
       await login({
-        username: values.username,
+        email: values.email,
         password: values.password,
       }).unwrap();
       router.push(`/`);
@@ -62,11 +66,11 @@ export default function LoginForm() {
         >
           <TextFormEle
             form={form}
-            name="username"
-            label={t.username}
+            name="email"
+            label={t.email}
             className="text-white"
             inputClassName=" border-white placeholder:text-gray-300"
-            placeholder="test@112"
+            placeholder="admin@albadr.com"
           />
           <TextFormEle
             form={form}
@@ -90,4 +94,3 @@ export default function LoginForm() {
     </FormWrapper>
   );
 }
-

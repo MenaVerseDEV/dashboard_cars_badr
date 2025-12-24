@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { Link } from "@/i18n/routing";
 import { motion } from "framer-motion";
 import { AddBrandDialog } from "@/components/Cars/Brands/AddBrandDialog";
-import { useGetAllBrandtsQuery } from "@/redux/features/brand/brandApi";
+import { useGetAllBrandsQuery } from "@/redux/features/brand/brandApi";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 
@@ -24,12 +24,10 @@ export default function Brands() {
     }
   }, [t]);
 
-  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useGetAllBrandtsQuery({
+  const { data, isLoading } = useGetAllBrandsQuery({
     page,
     limit: 10,
-    search,
   });
   const columns = useColumns();
 
@@ -77,18 +75,16 @@ export default function Brands() {
       {/* Table Section */}
       <div className="p-6 bg-white rounded-[32px] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden">
         <DataTable
-          data={data?.data?.brands?.brands ?? []}
+          data={data?.data ?? []}
           columns={columns}
-          searchFunctions={{
-            search,
-            setSearch,
-          }}
           toolbarChildren={[<AddBrandDialog key={1} />]}
           isLoading={isLoading}
           Pagenation={{
-            curentPage: data?.data?.brands?.pagination?.page ?? 1,
-            totalPages: data?.data?.brands?.pagination?.totalPages ?? 1,
+            curentPage: data?.meta?.page ?? page,
+            totalPages: data?.meta?.totalPages ?? 1,
             link: `/${locale}/cars/brands`,
+            totalItems: data?.meta?.total,
+            pageSize: 10,
           }}
         />
       </div>

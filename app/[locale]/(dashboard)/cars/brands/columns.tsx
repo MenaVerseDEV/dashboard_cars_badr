@@ -23,14 +23,22 @@ export const useColumns = () => {
         <DataTableColumnHeader column={column} title={t("logo")} />
       ),
       cell: ({ row }) => (
-        <div className="flex-center ">
-          <Image
-            src={row.original.image}
-            width={75}
-            height={75}
-            className="h-[60px] w-auto object-contain"
-            alt={row.original.name}
-          />
+        <div className="flex-center bg-gray-50 rounded-xl p-2 w-[80px] h-[60px] mx-auto">
+          {row.original.image ? (
+            <Image
+              src={row.original.image}
+              width={75}
+              height={75}
+              className="h-full w-full object-contain"
+              alt={row.original.name}
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center text-gray-400">
+              <span className="text-[10px] font-bold uppercase tracking-wider">
+                {row.original.name?.substring(0, 2)}
+              </span>
+            </div>
+          )}
         </div>
       ),
     },

@@ -18,16 +18,14 @@ function PermissionCondition({ moduleName, children, action }: Props) {
     const adminCookie = getCookie(ADMIN_COOKIE) as string | undefined;
 
     // Parse admin permissions with error handling
-    let adminCustomPermissions = adminCookie
-      ? (JSON.parse(adminCookie) as IAdmin)?.customPermissions
-      : [];
+    const admin = adminCookie ? (JSON.parse(adminCookie) as IAdmin) : null;
+    const permissions = admin?.permissions || [];
 
-    const module = adminCustomPermissions?.find(
-      (permission) => permission.module == moduleName
-    );
+    // Check if the permission string exists in the user's permissions array
+    const hasPermission = permissions.includes(`${moduleName}:${action}`);
 
     // Return children only if the user has permission
-    return module && module[action] ? children : null;
+    return hasPermission ? children : null;
   } catch (error) {
     console.error("Failed to parse admin permissions:", error);
     return null;
@@ -35,4 +33,3 @@ function PermissionCondition({ moduleName, children, action }: Props) {
 }
 
 export default PermissionCondition;
-

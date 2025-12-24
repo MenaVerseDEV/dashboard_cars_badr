@@ -32,8 +32,8 @@ export function AddModelDialog({
   brandId,
   modelId,
 }: {
-  brandId: number;
-  modelId?: number;
+  brandId: string;
+  modelId?: string;
 }) {
   console.log(modelId, "  modelId");
   const [open, setOpen] = useState(false);
@@ -44,14 +44,14 @@ export function AddModelDialog({
     new Date().getFullYear()
   );
   const { data: model, isLoading: modelLoading } = useGetmodelByIdQuery(
-    modelId ?? 0,
+    modelId ?? "",
     { skip: !modelId || !open }
   );
   const { data: modelTypes, isLoading: modelTypeLoading } =
     useGetAllModelTypesQuery(undefined, {
       skip: !open,
     });
-  const modelTypesOptions = modelTypes?.data?.modelTypes;
+  const modelTypesOptions = modelTypes?.data;
 
   const [addModel, { isLoading }] = useAddModelMutation();
   const [updateModel, { isLoading: updateLoading }] = useUpdatemodelMutation();
@@ -69,7 +69,7 @@ export function AddModelDialog({
                 ar: modelNameAr,
                 en: modelNameEn,
               },
-              modelTypeId: Number(modelType),
+              modelTypeId: modelType,
               year: Number(manufacturingYear),
             },
           }).unwrap();
@@ -80,7 +80,7 @@ export function AddModelDialog({
               ar: modelNameAr,
               en: modelNameEn,
             },
-            modelTypeId: Number(modelType),
+            modelTypeId: modelType,
             year: Number(manufacturingYear),
           }).unwrap();
         setOpen(false);
@@ -91,13 +91,13 @@ export function AddModelDialog({
     );
   };
   useEffect(() => {
-    if (model?.data?.model) {
-      setModelNameAr(model?.data?.model?.name?.ar);
-      setModelNameEn(model?.data?.model?.name?.en);
-      setModelType(String(model.data.model?.modelType?.id));
-      setManufacturingYear(model.data?.model?.year);
+    if (model?.data) {
+      setModelNameAr(model.data.name.ar);
+      setModelNameEn(model.data.name.en);
+      setModelType(model.data.modelType.id);
+      setManufacturingYear(model.data.year);
     }
-  }, [model?.data?.model]);
+  }, [model?.data]);
   if (modelLoading) return <p>loading</p>;
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -196,4 +196,3 @@ export function AddModelDialog({
     </Dialog>
   );
 }
-

@@ -1,6 +1,6 @@
 import { combinedBaseApi, SuccessResponse } from "@/redux/app/baseApi";
 import { IPagination } from "@/types";
-import { IAdmin, IAdminDTO, ICustomPermissions } from "@/types/auth";
+import { IAdmin, IAdminDTO } from "@/types/auth";
 
 const adminApi = combinedBaseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -18,9 +18,7 @@ const adminApi = combinedBaseApi.injectEndpoints({
     // get all permissions
     getAllPermissions: builder.query<
       SuccessResponse<{
-        permissions: {
-          permissions: ICustomPermissions[];
-        };
+        permissions: string[];
       }>,
       void
     >({

@@ -19,9 +19,13 @@ function CarAdd() {
 
   return (
     <div className="w-full">
-      <MainInfoStep draftId={draftId} />
+      <div>new component</div>
     </div>
   );
 }
 
 export default CarAdd;
+
+{
+  /* <MainInfoStep draftId={draftId} /> */
+}

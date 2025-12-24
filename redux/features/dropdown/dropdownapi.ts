@@ -4,30 +4,28 @@ const dropdownApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     //   get models dropdown
     getModelsDropdown: builder.query<
-      SuccessResponse<{
-        models: {
-          id: number;
+      SuccessResponse<
+        {
+          id: string;
           name: string;
           year: number;
-        }[];
-      }>,
-      number
+        }[]
+      >,
+      string
     >({
-      query: (id) => `/model/model/brand/${id}`,
+      query: (id) => `/models/brand/${id}`,
     }),
     //   get brand dropdown
     getBrandDropdown: builder.query<
-      SuccessResponse<{
-        brands: {
-          brands: {
-            id: number;
-            name: string;
-          }[];
-        };
-      }>,
+      SuccessResponse<
+        {
+          id: string;
+          name: string;
+        }[]
+      >,
       void
     >({
-      query: () => `/brand`,
+      query: () => `/brands`,
     }),
 
     //   get cities dropdown

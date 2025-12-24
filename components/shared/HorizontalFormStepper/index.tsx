@@ -30,7 +30,7 @@ export default function HorizontalFormStepper({
               {/* Step label at the top */}
               <span
                 className={cn("text-sm font-semibold text-center mb-3", {
-                  "text-gray-800": step.isActive || step.isCompleted,
+                  "text-primary": step.isActive || step.isCompleted,
                   "text-gray-400": !step.isActive && !step.isCompleted,
                 })}
               >
@@ -39,8 +39,8 @@ export default function HorizontalFormStepper({
 
               {/* Horizontal line below the text */}
               <div
-                className={cn("w-full h-1 transition-colors", {
-                  "bg-gray-800": step.isActive || step.isCompleted,
+                className={cn("w-full h-1 rounded-xl transition-colors", {
+                  "bg-primary": step.isActive || step.isCompleted,
                   "bg-gray-300": !step.isActive && !step.isCompleted,
                 })}
               />
@@ -54,4 +54,3 @@ export default function HorizontalFormStepper({
     </div>
   );
 }
-

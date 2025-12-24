@@ -29,18 +29,13 @@ import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const AdminSchema = z.object({
-  username: z.string().min(1, { message: "اسم المستخدم مطلوب" }),
-  email: z.string().min(1, { message: "البريد الالكتروني مطلوب" }),
-  password: z.string().min(1, { message: "كلمة المرور مطلوبة" }).optional(),
+  name: z.string().min(1, { message: "الاسم مطلوب" }),
+  email: z.string().email({ message: "البريد الالكتروني غير صحيح" }),
+  password: z
+    .string()
+    .min(6, { message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" })
+    .optional(),
 });
-
-interface ICustomPermissions {
-  read: boolean;
-  create: boolean;
-  delete: boolean;
-  module: string;
-  update: boolean;
-}
 
 export type IAdminForm = z.infer<typeof AdminSchema>;
 
@@ -52,9 +47,7 @@ export function AddAndUpdateAdmin({
   admin?: IAdmin;
 }) {
   const [open, setOpen] = useState(false);
-  const [customPermissions, setCustomPermissions] = useState<
-    ICustomPermissions[]
-  >([]);
+  const [permissions, setPermissions] = useState<string[]>([]);
 
   const locale = useLocale() as Locale;
 
@@ -72,42 +65,32 @@ export function AddAndUpdateAdmin({
     resolver: zodResolver(AdminSchema),
   });
 
-  const handlePermissionChange = (
-    moduleIndex: number,
-    permissionType: keyof Omit<ICustomPermissions, "module">,
-    value: boolean
-  ) => {
-    setCustomPermissions((prev) => {
-      const updated = [...prev];
-      updated[moduleIndex] = {
-        ...updated[moduleIndex],
-        [permissionType]: value,
-      };
-      return updated;
-    });
+  const handlePermissionToggle = (permission: string) => {
+    setPermissions((prev) =>
+      prev.includes(permission)
+        ? prev.filter((p) => p !== permission)
+        : [...prev, permission]
+    );
   };
 
   const onSubmit = async (data: IAdminForm) => {
     handleReqWithToaster(
       id ? "جاري تعديل المستخدم" : "جاري إضافة المستخدم",
       async () => {
+        const payload = {
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          permissions,
+        };
         if (id) {
           await updateAdmin({
             id,
-            admin: {
-              username: data.username,
-              email: data.email,
-              customPermissions,
-            },
+            admin: payload,
           }).unwrap();
           form.reset();
         } else {
-          await addAdmin({
-            username: data.username,
-            email: data.email,
-            password: data.password,
-            customPermissions,
-          }).unwrap();
+          await addAdmin(payload).unwrap();
           form.reset();
         }
         setOpen(false);
@@ -117,17 +100,17 @@ export function AddAndUpdateAdmin({
 
   useEffect(() => {
     if (admin) {
-      form.setValue("username", admin.username);
+      form.setValue("name", admin.name);
       form.setValue("email", admin.email);
-      setCustomPermissions(admin.customPermissions);
+      setPermissions(admin.permissions || []);
     }
   }, [admin, form]);
 
   useEffect(() => {
-    if (data?.data?.permissions?.permissions) {
-      setCustomPermissions(data.data.permissions.permissions);
+    if (data?.data?.permissions) {
+      setPermissions(data.data.permissions);
     }
-  }, [data, permissionsLoading]);
+  }, [data]);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -169,9 +152,9 @@ export function AddAndUpdateAdmin({
             >
               <TextFormEle
                 form={form}
-                name="username"
-                label="اسم المستخدم"
-                placeholder="mohamed142"
+                name="name"
+                label="الاسم"
+                placeholder="mohamed ali"
               />
               <TextFormEle
                 form={form}
@@ -191,7 +174,7 @@ export function AddAndUpdateAdmin({
               )}
             </div>
 
-            {/* Permissions Table */}
+            {/* Permissions Table Alternative */}
             {permissionsLoading ? (
               <div className="flex flex-col w-full gap-2">
                 {[1, 2, 3, 4].map((_, index) => (
@@ -199,51 +182,42 @@ export function AddAndUpdateAdmin({
                 ))}
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <h4 className="text-sm font-medium">اختصاصات المستخدم</h4>
-                <div className="w-full  overflow-x-auto">
-                  <div className=" grid grid-cols-5 bg-gray-100 text-sm font-medium border rounded-t-lg border-b-0">
-                    <span className="p-2 sm:p-3 text-start">الصلاحيات</span>
-                    <span className="p-2 sm:p-3 text-center">عرض</span>
-                    <span className="p-2 sm:p-3 text-center">تعديل</span>
-                    <span className="p-2 sm:p-3 text-center">إضافة</span>
-                    <span className="p-2 sm:p-3 text-center">حذف</span>
-                  </div>
-                  {customPermissions?.map((permission, index) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {Array.from(
+                    new Set(permissions.map((p) => p.split(":")[0]))
+                  ).map((module) => (
                     <div
-                      key={index}
-                      className=" grid grid-cols-5 border hover:bg-gray-50 transition-all duration-300"
+                      key={module}
+                      className="border rounded-xl p-4 bg-gray-50/50"
                     >
-                      <div className="p-2 sm:p-3 text-start">
-                        {permission.module}
+                      <h5 className="font-bold text-sm mb-3 text-primary uppercase">
+                        {module}
+                      </h5>
+                      <div className="space-y-2">
+                        {["read", "create", "update", "delete"].map(
+                          (action) => {
+                            const permStr = `${module}:${action}`;
+                            return (
+                              <div
+                                key={action}
+                                className="flex items-center justify-between gap-2"
+                              >
+                                <span className="text-xs text-gray-600 capitalize">
+                                  {action}
+                                </span>
+                                <Switch
+                                  checked={permissions.includes(permStr)}
+                                  onCheckedChange={() =>
+                                    handlePermissionToggle(permStr)
+                                  }
+                                />
+                              </div>
+                            );
+                          }
+                        )}
                       </div>
-                      {["read", "update", "create", "delete"].map((permKey) => (
-                        <div
-                          key={permKey}
-                          className="  p-2 sm:p-3 flex justify-center items-center"
-                        >
-                          <Switch
-                            checked={
-                              permission[
-                                permKey as keyof Omit<
-                                  ICustomPermissions,
-                                  "module"
-                                >
-                              ]
-                            }
-                            onCheckedChange={(value) =>
-                              handlePermissionChange(
-                                index,
-                                permKey as keyof Omit<
-                                  ICustomPermissions,
-                                  "module"
-                                >,
-                                value
-                              )
-                            }
-                          />
-                        </div>
-                      ))}
                     </div>
                   ))}
                 </div>
@@ -267,4 +241,3 @@ export function AddAndUpdateAdmin({
     </Dialog>
   );
 }
-

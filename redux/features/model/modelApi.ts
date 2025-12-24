@@ -16,44 +16,34 @@ const modelApi = combinedBaseApi.injectEndpoints({
       { name: { en: string; ar: string } }
     >({
       query: (data) => ({
-        url: `/model/model-type`,
+        url: `/models/model-type`,
         method: "POST",
         body: data,
       }),
     }),
     // get all model types
-    getAllModelTypes: builder.query<
-      SuccessResponse<{ modelTypes: IModelType[] }>,
-      void
-    >({
-      query: () => `/model/model-type`,
+    getAllModelTypes: builder.query<SuccessResponse<IModelType[]>, void>({
+      query: () => `/models/model-type`,
     }),
 
     // ########### model  ###########
-    getAllmodeltsByBrandId: builder.query<
-      SuccessResponse<{
-        models: IModel[];
-        pagination: IPagination;
-      }>,
-      { id: number; page: number; search: string }
+    getAllModelsByBrandId: builder.query<
+      SuccessResponse<IModel[]>,
+      { id: string; page: number; search: string }
     >({
-      // model/model/1
       query: ({ id, page, search }) =>
-        `/model/model/brand/${id}?limit=10&page=${page}&search=${search}`,
+        `/models/brand/${id}?limit=10&page=${page}&search=${search}&sortBy=createdAt&sortOrder=desc`,
       providesTags: ["Model"],
     }),
     // get model by id
-    getmodelById: builder.query<
-      SuccessResponse<{ model: ISingleModel }>,
-      number
-    >({
-      query: (id) => `/model/model/${id}`,
+    getmodelById: builder.query<SuccessResponse<ISingleModel>, string>({
+      query: (id) => `/models/${id}`,
       providesTags: ["Model"],
     }),
     // add model
     addModel: builder.mutation<SuccessResponse, ICreateModelDto>({
       query: (data) => ({
-        url: `model/model`,
+        url: `/models`,
         method: "POST",
         body: data,
       }),
@@ -63,10 +53,10 @@ const modelApi = combinedBaseApi.injectEndpoints({
     // update model
     updatemodel: builder.mutation<
       SuccessResponse,
-      { id: number; model: ICreateModelDto }
+      { id: string; model: ICreateModelDto }
     >({
       query: ({ id, model }) => ({
-        url: `model/model/${id}`,
+        url: `/models/${id}`,
         method: "PATCH",
         body: model,
       }),
@@ -76,7 +66,7 @@ const modelApi = combinedBaseApi.injectEndpoints({
     // delete model
     deletemodel: builder.mutation<SuccessResponse, string>({
       query: (id) => ({
-        url: `/model/model/${id}`,
+        url: `/models/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Model"],
@@ -90,7 +80,7 @@ export const {
   useGetAllModelTypesQuery,
 
   // ########### model  ###########
-  useGetAllmodeltsByBrandIdQuery,
+  useGetAllModelsByBrandIdQuery,
   useGetmodelByIdQuery,
   useAddModelMutation,
   useUpdatemodelMutation,

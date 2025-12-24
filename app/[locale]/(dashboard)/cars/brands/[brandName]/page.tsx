@@ -9,7 +9,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useLocale } from "next-intl";
 import { useParams, useSearchParams } from "next/navigation";
-import { useGetAllmodeltsByBrandIdQuery } from "@/redux/features/model/modelApi";
+import { useGetAllModelsByBrandIdQuery } from "@/redux/features/model/modelApi";
 import { AddModelDialog } from "@/components/Cars/Brands/AddModelDialog";
 import { AddModelTypeDialog } from "@/components/Cars/Brands/AddModelTypeDialog";
 
@@ -28,16 +28,16 @@ export default function Cars() {
       );
     }
   }, []);
-  const brandId = params.brandName;
+  const brandId = params.brandName as string;
   const brandName = searchParams.get("brandName");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useGetAllmodeltsByBrandIdQuery({
-    id: Number(brandId),
+  const { data, isLoading } = useGetAllModelsByBrandIdQuery({
+    id: brandId,
     page,
     search,
   });
-  const columns = useColumns({ brandId: Number(brandId) });
+  const columns = useColumns({ brandId });
   useEffect(() => {
     const pageParam = searchParams.get("page");
     if (pageParam) setPage(parseInt(pageParam));
@@ -80,7 +80,7 @@ export default function Cars() {
       </section>
 
       <DataTable
-        data={data?.data?.models ?? []}
+        data={data?.data ?? []}
         columns={columns}
         searchFunctions={{
           search,
@@ -88,13 +88,15 @@ export default function Cars() {
         }}
         toolbarChildren={[
           // <AddModelTypeDialog key={2} />,
-          <AddModelDialog brandId={Number(brandId)} key={1} />,
+          <AddModelDialog brandId={brandId} key={1} />,
         ]}
         isLoading={isLoading}
         Pagenation={{
-          curentPage: data?.data?.pagination?.page ?? 1,
-          totalPages: data?.data?.pagination?.totalPages ?? 1,
+          curentPage: data?.meta?.page ?? page,
+          totalPages: data?.meta?.totalPages ?? 1,
           link: `/${locale}/cars/brands/${brandId}`,
+          totalItems: data?.meta?.total,
+          pageSize: 10,
         }}
       />
     </motion.section>

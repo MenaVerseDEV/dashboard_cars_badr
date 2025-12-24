@@ -44,24 +44,26 @@ export default function AddLayout({ children }: AddLayoutProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 rounded-2xl">
-      <div className="border-b border-gray-200 pt-6 pb-4">
-        <HorizontalFormStepper
-          steps={steps}
-          currentStep={getCurrentStep()}
-          className="max-w-4xl mx-auto"
-        />
-      </div>
+      <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-2">
+        <div className="border-b border-gray-200 pt-6 pb-4">
+          <HorizontalFormStepper
+            steps={steps}
+            currentStep={getCurrentStep()}
+            className="mx-auto px-4"
+          />
+        </div>
 
-      {/* Main Content */}
-      <div className="mx-auto px-4 sm:px-6 py-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="bg-white rounded-3xl shadow-sm border border-gray-200 p-2"
-        >
-          {children}
-        </motion.div>
+        {/* Main Content */}
+        <div className="mx-auto px-4 sm:px-6 py-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className=" p-2"
+          >
+            {children}
+          </motion.div>
+        </div>
       </div>
     </div>
   );

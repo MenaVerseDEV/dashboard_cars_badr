@@ -13,20 +13,30 @@ interface ErrorResponse {
 // Define success response type with a dynamic DT
 export interface SuccessResponse<DataType = any> {
   data: DataType;
-  message: string;
+  meta?: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+  message?: string;
   status: boolean;
+  statusCode?: number;
+  timestamp?: string;
 }
 
 // Define a custom fetchBaseQuery
 const baseQuery = fetchBaseQuery({
-  baseUrl: "https://alkhedr-api-dev-f64d871b11b0.herokuapp.com/api/v1",
+  baseUrl: API_URL,
   prepareHeaders: (headers, { getState }) => {
     const loanguage = getCookie("NEXT_LOCALE") as "en" | "ar";
     headers.set("Accept-Language", loanguage || "en");
 
     const token = (getState() as RootState).auth.token;
     if (token) headers.set("Authorization", `Bearer ${token}`);
-    
+
     // Don't set Content-Type for FormData, let the browser set it with boundary
     return headers;
   },
@@ -41,10 +51,14 @@ const baseQueryWithInterceptor: typeof baseQuery = async (
   const result = await baseQuery(args, api, extraOptions);
   const method = typeof args === "string" ? "GET" : args.method || "GET";
 
-  if (!!result.error)
-    toast.error((result.error?.data as ErrorResponse).message);
-  if (!!result.data && method != "GET")
-    toast.success((result.data as SuccessResponse<any>).message);
+  if (!!result.error) {
+    const errorData = result.error?.data as ErrorResponse;
+    toast.error(errorData?.message || "An error occurred");
+  }
+  if (!!result.data && method !== "GET") {
+    const successData = result.data as SuccessResponse<any>;
+    if (successData.message) toast.success(successData.message);
+  }
   return result;
 };
 

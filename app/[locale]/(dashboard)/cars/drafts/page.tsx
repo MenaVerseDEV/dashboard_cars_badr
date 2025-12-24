@@ -32,7 +32,7 @@ export default function DraftCars() {
   const [deleteCar, { isLoading: isDeleting }] = useDeleteCarMutation();
   const [updateCar, { isLoading: isPublishing }] = useUpdateCarMutation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [carToDelete, setCarToDelete] = useState<number | null>(null);
+  const [carToDelete, setCarToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     document.title = `${t("title")} | Portal Dashboard`;
@@ -42,16 +42,16 @@ export default function DraftCars() {
     }
   }, [t]);
 
-  const handlePublishCar = async (carId: number) => {
+  const handlePublishCar = async (carId: string) => {
     handleReqWithToaster(t("publishing"), async () => {
       const formData = new FormData();
-      formData.append("id", carId.toString());
+      formData.append("id", carId);
       formData.append("showCar", "true");
       await updateCar(formData).unwrap();
     });
   };
 
-  const handleDeleteCar = (carId: number) => {
+  const handleDeleteCar = (carId: string) => {
     setCarToDelete(carId);
     setDeleteDialogOpen(true);
   };
@@ -118,13 +118,13 @@ export default function DraftCars() {
       {/* Table Section */}
       <div className="p-6 bg-white rounded-[32px] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden">
         <DataTable
-          data={data?.data?.draftCars ?? []}
+          data={data?.data ?? []}
           columns={columns}
           isLoading={isLoading}
           showExport={false}
           Pagenation={{
-            curentPage: data?.data?.pagination?.page ?? 1,
-            totalPages: data?.data?.pagination?.totalPages ?? 1,
+            curentPage: page,
+            totalPages: Math.ceil((data?.data?.length || 0) / 10),
             link: `/${locale}/cars/drafts`,
           }}
         />

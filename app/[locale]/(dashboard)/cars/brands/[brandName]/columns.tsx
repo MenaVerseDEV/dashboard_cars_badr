@@ -10,7 +10,7 @@ import DeleteDialog from "@/components/Dialogs/DeleteDialog";
 import { useDeletemodelMutation } from "@/redux/features/model/modelApi";
 import { AddModelDialog } from "@/components/Cars/Brands/AddModelDialog";
 
-export const useColumns = ({ brandId }: { brandId: number }) => {
+export const useColumns = ({ brandId }: { brandId: string }) => {
   const locale = useLocale() as Locale;
   const columns: ColumnDef<any>[] = [
     {

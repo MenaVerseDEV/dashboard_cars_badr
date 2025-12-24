@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export const useColumns = (onDeleteCar: (carId: number) => void) => {
+export const useColumns = (onDeleteCar: (carId: string) => void) => {
   const locale = useLocale() as Locale;
   const router = useRouter();
   const t = useTranslations("Table");
@@ -37,9 +37,11 @@ export const useColumns = (onDeleteCar: (carId: number) => void) => {
             />
           )}
           <div className="flex flex-col text-start">
-            <span className="font-medium text-sm">{row.original.name}</span>
+            <span className="font-medium text-sm">
+              {row.original.metaTitle?.[locale] || row.original.name}
+            </span>
             <span className="text-xs text-gray-500">
-              {row.original.carName}
+              {row.original.model?.name}
             </span>
           </div>
         </div>
@@ -53,7 +55,7 @@ export const useColumns = (onDeleteCar: (carId: number) => void) => {
       cell: ({ row }) => (
         <div className="flex flex-col text-center">
           <span className="font-medium">
-            {row.original.brand?.name || row.original.mainInfo[0]?.value?.name}
+            {row.original.model?.brand?.name || row.original.name}
           </span>
           <span className="text-xs text-gray-500">
             {row.original.model?.name}
@@ -69,7 +71,7 @@ export const useColumns = (onDeleteCar: (carId: number) => void) => {
       cell: ({ row }) => (
         <div className="text-center">
           <Badge variant="secondary" className="w-fit">
-            {row.original.year || t("unspecified")}
+            {row.original.model?.year || row.original.year || t("unspecified")}
           </Badge>
         </div>
       ),
@@ -81,25 +83,11 @@ export const useColumns = (onDeleteCar: (carId: number) => void) => {
       ),
       cell: ({ row }) => (
         <div className="flex flex-col text-center">
-          {row.original.hasOffer && row.original.offer > 0 ? (
-            <>
-              <span className="text-xs text-gray-500 line-through">
-                {row.original.price} {t("sar")}
-              </span>
-              <span className="font-bold text-green-600">
-                {row.original.priceAfterOffer} {t("sar")}
-              </span>
-              <Badge variant="destructive" className="w-fit text-xs mx-auto">
-                {t("discount")} {row.original.offer}%
-              </Badge>
-            </>
-          ) : (
-            <span className="font-medium">
-              {row.original.price && parseFloat(row.original.price) > 0
-                ? `${row.original.price} ${t("sar")}`
-                : t("unspecified")}
-            </span>
-          )}
+          <span className="font-medium">
+            {row.original.price && parseFloat(row.original.price.toString()) > 0
+              ? `${row.original.price} ${t("sar")}`
+              : t("unspecified")}
+          </span>
         </div>
       ),
     },
@@ -111,13 +99,10 @@ export const useColumns = (onDeleteCar: (carId: number) => void) => {
       cell: ({ row }) => (
         <div className="flex items-center gap-2 text-center">
           <Badge
-            variant={row.original.favourite ? "default" : "secondary"}
+            variant={row.original.draft ? "secondary" : "default"}
             className="flex items-center gap-1 mx-auto"
           >
-            {row.original.favourite && (
-              <Star className="w-3 h-3 fill-current" />
-            )}
-            {row.original.favourite ? t("featured") : t("normal")}
+            {row.original.draft ? t("draft") : t("published")}
           </Badge>
         </div>
       ),

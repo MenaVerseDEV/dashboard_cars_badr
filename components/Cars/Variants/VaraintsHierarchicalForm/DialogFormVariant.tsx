@@ -16,19 +16,22 @@ import {
   useUpdateVariantMutation,
 } from "@/redux/features/variants/variantsApi";
 import { handleReqWithToaster } from "@/components/shared/handleReqWithToaster";
-import { Trash2 } from "lucide-react";
+import { Trash2, Plus } from "lucide-react";
 import ImageUpload from "@/components/shared/ImageUpload";
 
 type Props = {
   children: React.ReactNode;
-  variantCategoryId: number;
+  variantCategoryId: string;
   variantId?: string;
   name?: {
     ar: string;
     en: string;
   };
   image?: string;
-  sendedValues?: string[];
+  sendedValues?: {
+    ar: string[];
+    en: string[];
+  };
 };
 
 function DialogFormVariant({
@@ -48,28 +51,36 @@ function DialogFormVariant({
   const [imagePreview, setImagePreview] = useState<string | null>(
     image ?? null
   );
-  const [values, setValues] = useState<string[]>(sendedValues ?? [""]);
+
+  // New localized values state
+  const [valuesAr, setValuesAr] = useState<string[]>(sendedValues?.ar ?? [""]);
+  const [valuesEn, setValuesEn] = useState<string[]>(sendedValues?.en ?? [""]);
 
   const [addVariant, { isLoading: addVariantLoading }] =
     useAddVariantMutation();
   const [updateVariant, { isLoading: updateVariantLoading }] =
     useUpdateVariantMutation();
+
   const handleAddVariantCategory = async () => {
-    // Create FormData to handle file upload
     const formData = new FormData();
-    formData.append("name[ar]", variantCategory.nameAr);
-    formData.append("name[en]", variantCategory.nameEn);
-    values.forEach((value, index) =>
-      formData.append(`values[${index}]`, value)
+    formData.append("name", variantCategory.nameEn); // Keeping it simple for now based on sample
+    // In a real localized app, we might need name[ar] and name[en]
+
+    valuesAr.forEach((value, index) =>
+      formData.append(`values[ar][${index}]`, value)
     );
-    formData.append("variantCategoryId", variantCategoryId.toString());
-    // Only append image if it's a File object
+    valuesEn.forEach((value, index) =>
+      formData.append(`values[en][${index}]`, value)
+    );
+
+    formData.append("categoryId", variantCategoryId);
+
     if (variantCategory.image instanceof File) {
       formData.append("image", variantCategory.image);
     }
 
     handleReqWithToaster(
-      variantId ? "جاي تعديل متغير" : "جاي اضافه متغير",
+      variantId ? "جاري تعديل المتغير..." : "جاري إضافة المتغير...",
       async () => {
         if (variantId)
           await updateVariant({
@@ -77,142 +88,205 @@ function DialogFormVariant({
             data: formData,
           }).unwrap();
         else await addVariant(formData).unwrap();
+
         setIsOpen(false);
-        setVariantCategory({ nameEn: "", nameAr: "", image: null });
-        setValues([""]); // Reset values
+        if (!variantId) {
+          setVariantCategory({ nameEn: "", nameAr: "", image: null });
+          setValuesAr([""]);
+          setValuesEn([""]);
+          setImagePreview(null);
+        }
       }
     );
   };
 
-  const handleValueChange = (index: number, newValue: string) => {
-    setValues((prev) => prev.map((v, i) => (i === index ? newValue : v)));
+  const handleValueChange = (
+    index: number,
+    newValue: string,
+    lang: "ar" | "en"
+  ) => {
+    if (lang === "ar") {
+      setValuesAr((prev) => prev.map((v, i) => (i === index ? newValue : v)));
+    } else {
+      setValuesEn((prev) => prev.map((v, i) => (i === index ? newValue : v)));
+    }
   };
 
   const addValueField = () => {
-    setValues([...values, ""]);
+    setValuesAr([...valuesAr, ""]);
+    setValuesEn([...valuesEn, ""]);
   };
 
   const removeValueField = (index: number) => {
-    setValues((prev) => prev.filter((_, i) => i !== index));
+    setValuesAr((prev) => prev.filter((_, i) => i !== index));
+    setValuesEn((prev) => prev.filter((_, i) => i !== index));
   };
+
   const handleImageChange = (file: File | null) => {
     if (file) {
-      // Update the form state with the file
-      setVariantCategory({
-        ...variantCategory,
-        image: file,
-      });
-
-      // Create a preview URL
+      setVariantCategory({ ...variantCategory, image: file });
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
+      reader.onloadend = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
     }
   };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-start mt-6">متغير الفرعيه</DialogTitle>
-          <DialogDescription className="text-start">
-            املأ التفاصيل أدناه وانقر على حفظ عند الانتهاء.
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="max-w-3xl p-0 overflow-hidden border-none rounded-3xl max-h-[90vh] flex flex-col">
+        <div className="bg-primary p-8 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black">
+              {variantId ? "تعديل المتغير" : "إضافة متغير فرعي جديد"}
+            </DialogTitle>
+            <DialogDescription className="text-primary-foreground/80 font-medium">
+              أدخل اسم المتغير وقيمه باللغتين العربية والإنجليزية
+            </DialogDescription>
+          </DialogHeader>
+        </div>
 
         <form
-          className="flex flex-col w-full gap-5"
+          className="flex-1 overflow-y-auto p-8 space-y-8"
           onSubmit={(e) => {
             e.preventDefault();
             handleAddVariantCategory();
           }}
         >
-          <section className="grid grid-cols-2 gap-4 mt-4">
-            <div>
-              <Label htmlFor="nameEn" className="flex items-center mb-2">
-                <span className="text-destructive ml-0.5">*</span>
-                Value
-              </Label>
-              <Input
-                id="nameEn"
-                value={variantCategory.nameEn}
-                onChange={(e) =>
-                  setVariantCategory({
-                    ...variantCategory,
-                    nameEn: e.target.value,
-                  })
-                }
-                placeholder="Enter value in English"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="nameAr" className="flex items-center mb-2">
-                القيمة
-                <span className="text-destructive mr-0.5">*</span>
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label
+                htmlFor="nameAr"
+                className="text-sm font-bold text-gray-700"
+              >
+                اسم المتغير (عربي)
               </Label>
               <Input
                 id="nameAr"
                 value={variantCategory.nameAr}
+                className="h-12 rounded-xl border-gray-100 bg-gray-50/50 focus:bg-white transition-all"
                 onChange={(e) =>
                   setVariantCategory({
                     ...variantCategory,
                     nameAr: e.target.value,
                   })
                 }
-                placeholder={"أدخل القيمة بالعربية"}
+                placeholder="مثال: نوع الغطاء"
                 dir="rtl"
               />
             </div>
-          </section>
+            <div className="space-y-2">
+              <Label
+                htmlFor="nameEn"
+                className="text-sm font-bold text-gray-700"
+              >
+                Variant Name (EN)
+              </Label>
+              <Input
+                id="nameEn"
+                value={variantCategory.nameEn}
+                className="h-12 rounded-xl border-gray-100 bg-gray-50/50 focus:bg-white transition-all"
+                onChange={(e) =>
+                  setVariantCategory({
+                    ...variantCategory,
+                    nameEn: e.target.value,
+                  })
+                }
+                placeholder="e.g. Paint Type"
+              />
+            </div>
+          </div>
 
-          {/* Dynamic values inputs */}
-          <section className="flex flex-col gap-3">
-            <Label className="text-lg">Values</Label>
-            {values.map((value, index) => (
-              <div key={index} className="flex gap-2 items-center">
-                <Input
-                  value={value}
-                  onChange={(e) => handleValueChange(index, e.target.value)}
-                  placeholder={`Value ${index + 1}`}
-                />
-                {values.length > 1 && (
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    onClick={() => removeValueField(index)}
-                  >
-                    <Trash2 className="h-4 w-4 text-white" />
-                  </Button>
-                )}
-              </div>
-            ))}
-            <Button type="button" variant="outline" onClick={addValueField}>
-              + Add Value
-            </Button>
-          </section>
-          {/* Image Upload Section */}
-          <div className="col-span-2">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between border-b pb-2">
+              <Label className="text-lg font-black text-gray-900 px-1">
+                القيم المتاحة (Values)
+              </Label>
+              <Button
+                type="button"
+                variant="primary"
+                size="sm"
+                onClick={addValueField}
+                className="rounded-xl px-4 h-9 shadow-md shadow-primary/10"
+              >
+                <Plus className="h-4 w-4 mr-1.5" />
+                إضافة قيمة جديدة
+              </Button>
+            </div>
+
+            <div className="space-y-3">
+              {valuesAr.map((_, index) => (
+                <div
+                  key={index}
+                  className="flex gap-4 items-end bg-gray-50/30 p-4 rounded-2xl border border-gray-100/50 group hover:border-primary/20 transition-all"
+                >
+                  <div className="flex-1 space-y-2">
+                    <Label className="text-[10px] uppercase font-black text-gray-400">
+                      قيمة {index + 1} (عربي)
+                    </Label>
+                    <Input
+                      value={valuesAr[index]}
+                      className="h-11 rounded-xl border-gray-100 bg-white"
+                      onChange={(e) =>
+                        handleValueChange(index, e.target.value, "ar")
+                      }
+                      placeholder="قيمة بالعربي"
+                      dir="rtl"
+                    />
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <Label className="text-[10px] uppercase font-black text-gray-400">
+                      Value {index + 1} (EN)
+                    </Label>
+                    <Input
+                      value={valuesEn[index]}
+                      className="h-11 rounded-xl border-gray-100 bg-white"
+                      onChange={(e) =>
+                        handleValueChange(index, e.target.value, "en")
+                      }
+                      placeholder="Value in English"
+                    />
+                  </div>
+                  {valuesAr.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-11 w-11 rounded-xl hover:bg-red-50 hover:text-red-500 text-gray-400 shrink-0"
+                      onClick={() => removeValueField(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-gray-50/50 p-6 rounded-2xl border border-dashed border-gray-200">
             <ImageUpload
               id="image"
-              label="الصورة"
+              label="أيقونة المتغير"
               imagePreview={imagePreview}
               onImageChange={handleImageChange}
             />
           </div>
-          <DialogFooter className="col-span-2 flex gap-2">
+
+          <DialogFooter className="pt-4 flex gap-3">
             <Button
               type="button"
               variant="outline"
+              className="h-12 px-8 rounded-xl font-bold border-gray-100"
               onClick={() => setIsOpen(false)}
             >
               إلغاء
             </Button>
-            <Button disabled={addVariantLoading || updateVariantLoading}>
-              حفظ
+            <Button
+              variant="primary"
+              className="h-12 px-10 rounded-xl font-black shadow-lg shadow-primary/20"
+              disabled={addVariantLoading || updateVariantLoading}
+            >
+              حفظ المتغير
             </Button>
           </DialogFooter>
         </form>
@@ -222,4 +296,3 @@ function DialogFormVariant({
 }
 
 export default DialogFormVariant;
-
