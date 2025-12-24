@@ -1,0 +1,201 @@
+{
+  "Sidebar": {
+    "dashboard": "Dashboard",
+    "home": "Home",
+    "analytics": "Analytics",
+    "users": "Users",
+    "messages": "Messages",
+    "settings": "Settings"
+  },
+  "FetchCar": {
+    "title": "Fetch Car Data by ID",
+    "placeholder": "Enter car ID...",
+    "search": "Search",
+    "loading": "Loading...",
+    "success": "Success",
+    "error": "Error",
+    "notFetched": "Not fetched",
+    "mainInfo": "Main Info",
+    "specifications": "Specifications",
+    "seoInfo": "SEO Info",
+    "copyJson": "Copy JSON",
+    "noDataFound": "No data found for car ID",
+    "endpointError": "One or more endpoints failed to fetch data. Check the status indicators above for details.",
+    "modes": {
+      "individual": "Individual Endpoints",
+      "complete": "Complete Car Data",
+      "switchToIndividual": "Switch to Individual Mode",
+      "switchToComplete": "Switch to Complete Mode"
+    },
+    "tabs": {
+      "mainInfo": "Main Information",
+      "specifications": "Car Specifications",
+      "seoInfo": "SEO Information",
+      "complete": "Complete Car Data"
+    }
+  },
+  "Cars": {
+    "title": "Cars",
+    "description": "Comprehensive list of all cars currently available in the showroom",
+    "drafts": "Drafts",
+    "brands": "Brands",
+    "addCar": "Add Car",
+    "deleteConfirmTitle": "Confirm Deletion",
+    "deleteConfirmDesc": "Are you sure you want to delete this car? This action cannot be undone and all car data will be erased.",
+    "delete": "Delete"
+  },
+  "Dashboard": {
+    "welcome": "Welcome to Dashboard",
+    "welcomeDesc": "Manage your car inventory, brands, and system interactions seamlessly from a central hub.",
+    "analytics": "Inventory Analytics",
+    "actionsHub": "Actions Hub",
+    "liveData": "Live Data",
+    "tips": "Tips for today",
+    "tipsDesc": "Did you know adding detailed 360 images can increase engagement by 40%? Start updating inventory specs.",
+    "stats": {
+      "cars": "Cars",
+      "news": "News",
+      "reels": "Reels",
+      "employees": "Employees"
+    },
+    "actions": {
+      "addCar": "Add New Car",
+      "addCarDesc": "Add a new car to the showroom",
+      "addNews": "Add News Article",
+      "addNewsDesc": "Write and publish a new article",
+      "addReel": "Add New Reel",
+      "addReelDesc": "Create a new reel for the platform",
+      "manageLocations": "Manage Locations",
+      "manageLocationsDesc": "Update branch locations"
+    },
+    "footerLinks": {
+      "drafts": "Drafts",
+      "draftsDesc": "Saved drafts",
+      "testDrive": "Test Drive",
+      "testDriveDesc": "Recent requests",
+      "financing": "Financing",
+      "financingDesc": "Bank options"
+    }
+  },
+  "Common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "loading": "Loading...",
+    "deleting": "Deleting...",
+    "retry": "Retry",
+    "error": "Error"
+  },
+  "Table": {
+    "car": "Car",
+    "brand": "Brand",
+    "year": "Year",
+    "price": "Price",
+    "status": "Status",
+    "actions": "Actions",
+    "unspecified": "Unspecified",
+    "sar": "SAR",
+    "discount": "Discount",
+    "featured": "Featured",
+    "normal": "Normal",
+    "viewDetails": "View Details",
+    "edit": "Edit",
+    "delete": "Delete",
+    "openMenu": "Open Menu",
+    "logo": "Logo",
+    "brandName": "Brand Name",
+    "showModels": "Show Models",
+    "view": "View"
+  },
+  "Brands": {
+    "title": "Brands",
+    "description": "Manage car manufacturers and brand agencies",
+    "back": "Back",
+    "deleteConfirm": "Are you sure you want to delete this brand?"
+  },
+  "Drafts": {
+    "title": "Car Drafts",
+    "description": "Manage and view car drafts in the inventory system",
+    "publishing": "Publishing...",
+    "deleteConfirmTitle": "Confirm Draft Deletion",
+    "deleteConfirmDesc": "Are you sure you want to delete this draft? This action cannot be undone.",
+    "continueCreation": "Continue Creation",
+    "publishDraft": "Publish Draft",
+    "deleteDraft": "Delete Draft",
+    "completed": "Completed",
+    "incomplete": "Incomplete",
+    "date": "Date",
+    "image": "Image"
+  },
+  "AddCar": {
+    "title": "Add New Car",
+    "description": "Add a new car to the inventory with full specifications",
+    "steps": {
+      "mainInfo": "Main Information",
+      "specs": "Specifications",
+      "seo": "SEO"
+    },
+    "form": {
+      "coverImage": "Cover Image",
+      "coverDesc": "Upload a high-quality image of the car (4:5 ratio, min 1000px width) in .PNG / .JPG format",
+      "browse": "Browse",
+      "editionName": "Edition Name",
+      "carDescription": "Car Description",
+      "carDescriptionAr": "Car Description in Arabic",
+      "carDescriptionEn": "Car Description in English",
+      "price": "Price",
+      "hasOffer": "Has Offer",
+      "offer": "Offer",
+      "brand": "Brand",
+      "model": "Model",
+      "status": "Status",
+      "available": "Available",
+      "byRequest": "By Request",
+      "next": "Next",
+      "interiorImages": "Interior Images",
+      "exteriorImages": "Exterior Images",
+      "mainVideo": "Main Video",
+      "addPhotos": "Add Photos",
+      "addVideo": "Add Video",
+      "videoDesc": "Upload a car video in MP4 format",
+      "saving": "Saving Car...",
+      "brandFirst": "Please select brand first",
+      "loadingModels": "Loading Models..."
+    },
+    "specs": {
+      "choose": "Choose",
+      "previous": "Previous",
+      "saveDraft": "Save as Draft",
+      "next": "Next",
+      "savingSpecs": "Saving car specifications...",
+      "savingDraft": "Saving specifications as draft...",
+      "errorProcessing": "An error occurred while processing data. Please try again.",
+      "errorLoading": "An error occurred while loading data. Please try again.",
+      "errorLoadingExisting": "An error occurred while loading existing specifications. Please try again.",
+      "noData": "No data available",
+      "commonColors": "Common Colors",
+      "customColor": "Custom Color",
+      "invalidColor": "Invalid color code",
+      "addColor": "Add"
+    },
+    "seo": {
+      "metaTitleAr": "Meta Title (AR)",
+      "metaTitleEn": "Meta Title (EN)",
+      "metaDescriptionAr": "Meta Description (AR)",
+      "metaDescriptionEn": "Meta Description (EN)",
+      "keywords": "Keywords",
+      "keywordsPlaceholder": "Type and press comma to add tags...",
+      "previous": "Previous",
+      "saveDraft": "Save as Draft",
+      "next": "Publish Car",
+      "publishing": "Publishing car...",
+      "savingDraft": "Saving car as draft...",
+      "errorLoading": "Failed to load SEO data. Please try again.",
+      "requiredFields": "Please fill all required fields",
+      "metaTitleMin": "Meta title cannot be less than 5 characters",
+      "metaTitleMinEn": "Meta title cannot be less than 5 characters",
+      "metaDescMin": "Meta description cannot be less than 10 characters",
+      "metaDescMinEn": "Meta description cannot be less than 10 characters",
+      "keywordsMin": "Keywords must be at least 3 items"
+    }
+  }
+}

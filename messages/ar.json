@@ -1,0 +1,201 @@
+{
+  "Sidebar": {
+    "dashboard": "لوحة التحكم",
+    "home": "الرئيسية",
+    "analytics": "تحليلات",
+    "users": "المستخدمون",
+    "messages": "الرسائل",
+    "settings": "الإعدادات"
+  },
+  "FetchCar": {
+    "title": "جلب بيانات السيارة بالمعرف",
+    "placeholder": "أدخل معرف السيارة...",
+    "search": "بحث",
+    "loading": "جاري التحميل...",
+    "success": "نجح",
+    "error": "خطأ",
+    "notFetched": "لم يتم الجلب",
+    "mainInfo": "المعلومات الأساسية",
+    "specifications": "المواصفات",
+    "seoInfo": "معلومات SEO",
+    "copyJson": "نسخ JSON",
+    "noDataFound": "لم يتم العثور على بيانات للسيارة بالمعرف",
+    "endpointError": "فشل في جلب البيانات من واحد أو أكثر من النقاط الطرفية. تحقق من مؤشرات الحالة أعلاه للحصول على التفاصيل.",
+    "modes": {
+      "individual": "النقاط الطرفية الفردية",
+      "complete": "بيانات السيارة الكاملة",
+      "switchToIndividual": "التبديل إلى الوضع الفردي",
+      "switchToComplete": "التبديل إلى الوضع الكامل"
+    },
+    "tabs": {
+      "mainInfo": "المعلومات الأساسية",
+      "specifications": "مواصفات السيارة",
+      "seoInfo": "معلومات SEO",
+      "complete": "بيانات السيارة الكاملة"
+    }
+  },
+  "Cars": {
+    "title": "السيارات",
+    "description": "قائمة شاملة بجميع السيارات المتاحة في المعرض حالياً",
+    "drafts": "المسودات",
+    "brands": "الماركات",
+    "addCar": "إضافة سيارة",
+    "deleteConfirmTitle": "تأكيد الحذف",
+    "deleteConfirmDesc": "هل أنت متأكد من حذف هذه السيارة؟ لا يمكن التراجع عن هذا الإجراء وسيتم مسح جميع بيانات السيارة.",
+    "delete": "حذف"
+  },
+  "Dashboard": {
+    "welcome": "مرحباً بك في لوحة التحكم",
+    "welcomeDesc": "إدارة شاملة لمخزون السيارات، الماركات، وجميع تفاعلات النظام في مكان واحد وبسهولة تامة.",
+    "analytics": "تحليلات المخزون",
+    "actionsHub": "إجراءات سريعة",
+    "liveData": "بيانات مباشرة",
+    "tips": "نصيحة اليوم",
+    "tipsDesc": "هل تعلم أن إضافة صور 360 مفصلة تزيد التفاعل بنسبة 40%؟ ابدأ بتحديث مواصفات المخزون.",
+    "stats": {
+      "cars": "السيارات",
+      "news": "الأخبار",
+      "reels": "الريلز",
+      "employees": "الموظفين"
+    },
+    "actions": {
+      "addCar": "إضافة سيارة جديدة",
+      "addCarDesc": "إضافة سيارة جديدة للمعرض",
+      "addNews": "إضافة خبر جديد",
+      "addNewsDesc": "كتابة ونشر خبر جديد",
+      "addReel": "إضافة ريل جديد",
+      "addReelDesc": "إنشاء ريل جديد للمنصة",
+      "manageLocations": "إدارة المواقع",
+      "manageLocationsDesc": "تحديث مواقع الفروع"
+    },
+    "footerLinks": {
+      "drafts": "المسودات",
+      "draftsDesc": "إدارة المسودات",
+      "testDrive": "تجارب القيادة",
+      "testDriveDesc": "إدارة الطلبات",
+      "financing": "التمويل",
+      "financingDesc": "إدارة الخيارات"
+    }
+  },
+  "Common": {
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "loading": "جاري التحميل...",
+    "deleting": "جاري الحذف...",
+    "retry": "إعادة المحاولة",
+    "error": "خطأ"
+  },
+  "Table": {
+    "car": "السيارة",
+    "brand": "البراند",
+    "year": "السنة",
+    "price": "السعر",
+    "status": "الحالة",
+    "actions": "الإجراءات",
+    "unspecified": "غير محدد",
+    "sar": "ر.س",
+    "discount": "خصم",
+    "featured": "مميز",
+    "normal": "عادي",
+    "viewDetails": "عرض التفاصيل",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "openMenu": "فتح القائمة",
+    "logo": "الشعار",
+    "brandName": "اسم الماركة",
+    "showModels": "عرض الموديلات",
+    "view": "عرض"
+  },
+  "Brands": {
+    "title": "الماركات",
+    "description": "إدارة وكالات وماركات السيارات في النظام",
+    "back": "رجوع",
+    "deleteConfirm": "هل أنت متأكد من حذف هذه الماركة؟"
+  },
+  "Drafts": {
+    "title": "مسودات السيارات",
+    "description": "إدارة وعرض مسودات السيارات في النظام",
+    "publishing": "جاري النشر...",
+    "deleteConfirmTitle": "تأكيد حذف المسودة",
+    "deleteConfirmDesc": "هل أنت متأكد من حذف هذه المسودة؟ لا يمكن التراجع عن هذا الإجراء.",
+    "continueCreation": "متابعة الإنشاء",
+    "publishDraft": "نشر المسودة",
+    "deleteDraft": "حذف المسودة",
+    "completed": "مكتمل",
+    "incomplete": "غير مكتمل",
+    "date": "التاريخ",
+    "image": "صورة"
+  },
+  "AddCar": {
+    "title": "إضافة سيارة جديدة",
+    "description": "إضافة سيارة جديدة للمعرض مع كامل المواصفات",
+    "steps": {
+      "mainInfo": "المعلومات الأساسية",
+      "specs": "المواصفات",
+      "seo": "السيو"
+    },
+    "form": {
+      "coverImage": "صورة الغلاف",
+      "coverDesc": "قم برفع صورة عالية الجودة للسيارة بنسبة 4 : 5 بعرض 1000 بيكسل كحد أدني بصيغة .PNG / .JPG",
+      "browse": "اختر من الجهاز",
+      "editionName": "اسم الفئة",
+      "carDescription": "وصف السيارة",
+      "carDescriptionAr": "وصف السيارة باللغة العربية",
+      "carDescriptionEn": "وصف السيارة باللغة الإنجليزية",
+      "price": "السعر",
+      "hasOffer": "لديه عرض",
+      "offer": "العرض",
+      "brand": "الماركة",
+      "model": "الموديل",
+      "status": "الحالة",
+      "available": "متوفر",
+      "byRequest": "عند الطلب",
+      "next": "التالي",
+      "interiorImages": "الصور الداخلية",
+      "exteriorImages": "الصور الخارجية",
+      "mainVideo": "الفيديو الرئيسي",
+      "addPhotos": "إضافة صور",
+      "addVideo": "إضافة فيديو",
+      "videoDesc": "رفع فيديو للسيارة بصيغة MP4",
+      "saving": "جاري الحفظ...",
+      "brandFirst": "يرجى اختيار الماركة أولاً",
+      "loadingModels": "جاري تحميل الموديلات"
+    },
+    "specs": {
+      "choose": "اختر",
+      "previous": "السابق",
+      "saveDraft": "حفظ كمسودة",
+      "next": "التالي",
+      "savingSpecs": "جاري حفظ مواصفات السيارة...",
+      "savingDraft": "جاري حفظ المواصفات كمسودة...",
+      "errorProcessing": "حدث خطأ أثناء معالجة البيانات. يرجى المحاولة مرة أخرى.",
+      "errorLoading": "حدث خطأ أثناء تحميل البيانات. يرجى المحاولة مرة أخرى.",
+      "errorLoadingExisting": "حدث خطأ أثناء تحميل المواصفات الموجودة. يرجى المحاولة مرة أخرى.",
+      "noData": "لا توجد بيانات متاحة",
+      "commonColors": "الألوان الشائعة",
+      "customColor": "لون مخصص",
+      "invalidColor": "كود اللون غير صحيح",
+      "addColor": "إضافة"
+    },
+    "seo": {
+      "metaTitleAr": "عنوان الميتا (AR)",
+      "metaTitleEn": "عنوان الميتا (EN)",
+      "metaDescriptionAr": "وصف الميتا (AR)",
+      "metaDescriptionEn": "وصف الميتا (EN)",
+      "keywords": "الكلمات المفتاحية",
+      "keywordsPlaceholder": "من فضلك أدخل الكلمات المفتاحية مفصولة بفاصلة",
+      "previous": "السابق",
+      "saveDraft": "حفظ كمسودة",
+      "next": "نشر السيارة",
+      "publishing": "جاري نشر السيارة...",
+      "savingDraft": "جاري حفظ السيارة كمسودة...",
+      "errorLoading": "فشل في تحميل بيانات الـ SEO. يرجى المحاولة مرة أخرى.",
+      "requiredFields": "يرجى ملء جميع الحقول المطلوبة",
+      "metaTitleMin": "عنوان الميتا لا يمكن أن يكون أصغر من 5 احرف",
+      "metaTitleMinEn": "Meta title cannot be less than 5 characters",
+      "metaDescMin": "وصف الميتا لا يمكن أن يكون أصغر من 10 احرف",
+      "metaDescMinEn": "Meta description cannot be less than 10 characters",
+      "keywordsMin": "الكلمات المفتاحية يجب ان تكون 3 عناصر على الأقل"
+    }
+  }
+}
