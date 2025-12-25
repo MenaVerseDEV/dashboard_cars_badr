@@ -10,8 +10,8 @@ import TextFormEle from "@/components/ui/form/text-form-element";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import {
-  useUpdateSeoInfoMutation,
-  useGetSeoInfoQuery,
+  useUpdateCarMutation,
+  useGetSingleCarByIdQuery,
 } from "@/redux/features/cars/carsApi";
 import { handleReqWithToaster } from "@/components/shared/handleReqWithToaster";
 import { TagInput } from "@/components/ui/tags-input";
@@ -23,37 +23,27 @@ import { useLocale, useTranslations } from "next-intl";
 
 export const metaDataSchema = (t: any) =>
   z.object({
-    metaTitleAr: z
-      .string()
-      .min(5, {
-        message:
-          t("metaTitleMin") || "Meta title cannot be less than 5 characters",
-      }),
-    metaTitleEn: z
-      .string()
-      .min(5, {
-        message:
-          t("metaTitleMinEn") || "Meta title cannot be less than 5 characters",
-      }),
-    metaDescriptionAr: z
-      .string()
-      .min(10, {
-        message:
-          t("metaDescMin") ||
-          "Meta description cannot be less than 10 characters",
-      }),
-    metaDescriptionEn: z
-      .string()
-      .min(10, {
-        message:
-          t("metaDescMinEn") ||
-          "Meta description cannot be less than 10 characters",
-      }),
-    metaKeywords: z
-      .array(z.string())
-      .min(3, {
-        message: t("keywordsMin") || "Keywords must be at least 3 items",
-      }),
+    metaTitleAr: z.string().min(5, {
+      message:
+        t("metaTitleMin") || "Meta title cannot be less than 5 characters",
+    }),
+    metaTitleEn: z.string().min(5, {
+      message:
+        t("metaTitleMinEn") || "Meta title cannot be less than 5 characters",
+    }),
+    metaDescriptionAr: z.string().min(10, {
+      message:
+        t("metaDescMin") ||
+        "Meta description cannot be less than 10 characters",
+    }),
+    metaDescriptionEn: z.string().min(10, {
+      message:
+        t("metaDescMinEn") ||
+        "Meta description cannot be less than 10 characters",
+    }),
+    metaKeywords: z.array(z.string()).min(3, {
+      message: t("keywordsMin") || "Keywords must be at least 3 items",
+    }),
   });
 
 export type IMetaDataForm = z.infer<ReturnType<typeof metaDataSchema>>;
@@ -66,16 +56,15 @@ export default function SeoInfoStep({ draftId }: { draftId: string }) {
 
   // API Queries
   const {
-    data: existingSeoData,
-    isLoading: isSeoDataLoading,
-    error: seoDataError,
-  } = useGetSeoInfoQuery(Number(draftId), {
+    data: existingCarData,
+    isLoading: isCarLoading,
+    error: carError,
+  } = useGetSingleCarByIdQuery(draftId, {
     skip: !draftId,
   });
 
   // API Mutations
-  const [updateSeoInfo, { isLoading: isSeoSubmitting }] =
-    useUpdateSeoInfoMutation();
+  const [updateCar, { isLoading: isSubmitting }] = useUpdateCarMutation();
 
   // Form Management
   const form = useForm<IMetaDataForm>({
@@ -88,21 +77,28 @@ export default function SeoInfoStep({ draftId }: { draftId: string }) {
     const loadingMessage = isPublish ? t("publishing") : t("savingDraft");
 
     handleReqWithToaster(loadingMessage, async () => {
-      const seoData = {
-        metaTitle: {
+      const formData = new FormData();
+      formData.append(
+        "metaTitle",
+        JSON.stringify({
           ar: data.metaTitleAr,
           en: data.metaTitleEn,
-        },
-        metaDescription: {
+        })
+      );
+      formData.append(
+        "metaDescription",
+        JSON.stringify({
           ar: data.metaDescriptionAr,
           en: data.metaDescriptionEn,
-        },
-        metaKeywords: data.metaKeywords,
-        showCar: isPublish,
-      };
-      await updateSeoInfo({
-        id: parseInt(draftId),
-        seoData,
+        })
+      );
+      formData.append("metaKeywords", data.metaKeywords.join(", "));
+      // Using 'draft' instead of 'showCar' to match other steps' logic
+      formData.append("draft", (!isPublish).toString());
+
+      await updateCar({
+        id: draftId,
+        data: formData,
       }).unwrap();
       router.push(mode === "publish" ? "/cars" : "/cars/drafts");
     });
@@ -129,25 +125,31 @@ export default function SeoInfoStep({ draftId }: { draftId: string }) {
 
   // Side Effects
   useEffect(() => {
-    if (existingSeoData?.data?.seoInfo) {
-      const seoData = existingSeoData.data.seoInfo;
+    if (existingCarData?.data?.seoInfo) {
+      const seoData = existingCarData.data.seoInfo;
       form.reset({
         metaTitleAr: seoData.metaTitle?.ar || "",
         metaTitleEn: seoData.metaTitle?.en || "",
         metaDescriptionAr: seoData.metaDescription?.ar || "",
         metaDescriptionEn: seoData.metaDescription?.en || "",
-        metaKeywords: seoData.metaKeywords || [],
+        metaKeywords:
+          typeof seoData.metaKeywords === "string"
+            ? seoData.metaKeywords
+                .split(",")
+                .map((s: string) => s.trim())
+                .filter(Boolean)
+            : seoData.metaKeywords || [],
       });
     }
-  }, [existingSeoData]);
+  }, [existingCarData, form]);
 
-  // Show loading state while fetching SEO data
-  if (isSeoDataLoading) {
+  // Show loading state while fetching car data
+  if (isCarLoading) {
     return <StepLoadingState />;
   }
 
-  // Show error state if SEO data fetch failed
-  if (seoDataError) {
+  // Show error state if car data fetch failed
+  if (carError) {
     return (
       <StepErrorState
         message={t("errorLoading")}
@@ -237,11 +239,11 @@ export default function SeoInfoStep({ draftId }: { draftId: string }) {
               variant={"secondary"}
               className="min-w-[180px] h-12 rounded-xl font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 border-none"
               dir="ltr"
-              icon={!isSeoSubmitting && <Save size={18} />}
-              disabled={isSeoSubmitting}
+              icon={!isSubmitting && <Save size={18} />}
+              disabled={isSubmitting}
               onClick={() => handleSubmitWithMode("draft")}
             >
-              {isSeoSubmitting ? (
+              {isSubmitting ? (
                 <Loader className="animate-spin" />
               ) : (
                 t("saveDraft")
@@ -253,21 +255,17 @@ export default function SeoInfoStep({ draftId }: { draftId: string }) {
               className="min-w-[180px] h-12 rounded-xl font-bold shadow-lg shadow-primary/20"
               dir="ltr"
               icon={
-                !isSeoSubmitting && (
+                !isSubmitting && (
                   <ArrowLeft
                     className={locale === "ar" ? "rotate-0" : "rotate-180"}
                     size={18}
                   />
                 )
               }
-              disabled={isSeoSubmitting}
+              disabled={isSubmitting}
               onClick={() => handleSubmitWithMode("publish")}
             >
-              {isSeoSubmitting ? (
-                <Loader className="animate-spin" />
-              ) : (
-                t("next")
-              )}
+              {isSubmitting ? <Loader className="animate-spin" /> : t("next")}
             </Button>
           </div>
         </div>

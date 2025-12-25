@@ -60,13 +60,13 @@ interface ILangObject {
 }
 
 type Variant = {
-  id: number;
+  id: string;
   name: ILangObject;
   values: string[];
 };
 
 type Category = {
-  id: number;
+  id: string;
   name: ILangObject;
 };
 
@@ -76,7 +76,7 @@ export type ICategoryVariants = {
 };
 
 interface VariantSubmission {
-  var_id: number;
+  specId: string;
   value: string;
 }
 
@@ -106,7 +106,7 @@ export default function SpecsInfoStep() {
   const locale = useLocale();
   const router = useRouter();
   const params = useParams();
-  const draftId = parseInt(params["draft-id"] as string);
+  const draftId = params["draft-id"] as string;
 
   const [activeTab, setActiveTab] = useState<string>("");
   const [tabsData, setTabsData] = useState<ApiTab[]>([]);
@@ -123,11 +123,7 @@ export default function SpecsInfoStep() {
     data: apiResponse,
     isLoading: isCategoriesLoading,
     error: categoriesError,
-  } = useGetAllVariantCategoriesQuery<{
-    data: ApiResponse;
-    isLoading: boolean;
-    error: unknown;
-  }>();
+  } = useGetAllVariantCategoriesQuery();
 
   // Get existing car specifications if draftId is available
   const {
@@ -173,14 +169,16 @@ export default function SpecsInfoStep() {
             // Find the tab that contains this variant
             for (const tab of tabs) {
               const field = tab.fields.find(
-                (f) => f.id === variant.var_id.toString()
+                (f) => f.id === (variant.specId || variant.var_id)?.toString()
               );
               if (field) {
                 if (!defaultValues[tab.id]) {
                   defaultValues[tab.id] = {};
                 }
-                defaultValues[tab.id][variant.var_id.toString()] =
-                  variant.value;
+                const fieldId = (variant.specId || variant.var_id)?.toString();
+                if (fieldId) {
+                  defaultValues[tab.id][fieldId] = variant.value;
+                }
                 break;
               }
             }
@@ -324,19 +322,21 @@ export default function SpecsInfoStep() {
     const loadingMessage = isPublish ? t("savingSpecs") : t("savingDraft");
 
     handleReqWithToaster(loadingMessage, async () => {
-      // Format data as [{"var_id":1,"value":"ABS"}]
+      // Format data as [{"specId":"ULID","value":"Value"}]
       const formattedData: VariantSubmission[] = [];
       // Process each tab
       for (const [tabKey, tabValues] of Object.entries(data)) {
         // Process each field in the tab
-        for (const [fieldKey, fieldValue] of Object.entries(
-          tabValues as Record<string, string>
-        )) {
-          if (fieldValue && fieldValue !== "none") {
-            formattedData.push({
-              var_id: Number.parseInt(fieldKey),
-              value: fieldValue,
-            });
+        if (tabValues && typeof tabValues === "object") {
+          for (const [fieldKey, fieldValue] of Object.entries(
+            tabValues as Record<string, string>
+          )) {
+            if (fieldValue && fieldValue !== "none") {
+              formattedData.push({
+                specId: fieldKey,
+                value: fieldValue,
+              });
+            }
           }
         }
       }

@@ -159,7 +159,8 @@
       "videoDesc": "Upload a car video in MP4 format",
       "saving": "Saving Car...",
       "brandFirst": "Please select brand first",
-      "loadingModels": "Loading Models..."
+      "loadingModels": "Loading Models...",
+      "image": "Image"
     },
     "specs": {
       "choose": "Choose",
@@ -178,6 +179,7 @@
       "addColor": "Add"
     },
     "seo": {
+      "title": "SEO Information",
       "metaTitleAr": "Meta Title (AR)",
       "metaTitleEn": "Meta Title (EN)",
       "metaDescriptionAr": "Meta Description (AR)",

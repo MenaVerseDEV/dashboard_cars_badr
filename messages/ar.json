@@ -159,7 +159,8 @@
       "videoDesc": "رفع فيديو للسيارة بصيغة MP4",
       "saving": "جاري الحفظ...",
       "brandFirst": "يرجى اختيار الماركة أولاً",
-      "loadingModels": "جاري تحميل الموديلات"
+      "loadingModels": "جاري تحميل الموديلات",
+      "image": "صورة"
     },
     "specs": {
       "choose": "اختر",
@@ -178,6 +179,7 @@
       "addColor": "إضافة"
     },
     "seo": {
+      "title": "إعدادات السيو",
       "metaTitleAr": "عنوان الميتا (AR)",
       "metaTitleEn": "عنوان الميتا (EN)",
       "metaDescriptionAr": "وصف الميتا (AR)",

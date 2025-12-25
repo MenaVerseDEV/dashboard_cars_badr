@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
-import SpecsInfoStep from "@/components/Cars/Add/steps/SpecsInfoStep";
 import { useParams } from "next/navigation";
+import SpecsInfoStepV2 from "@/components/Cars/_AddV2/SpecsInfoStepV2";
 
 export default function DraftSpecifications() {
   useEffect(() => {
@@ -17,7 +17,7 @@ export default function DraftSpecifications() {
 
   return (
     <div className="w-full">
-      <SpecsInfoStep />
+      <SpecsInfoStepV2 />
     </div>
   );
 }

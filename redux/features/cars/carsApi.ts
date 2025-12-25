@@ -24,41 +24,22 @@ export const carsApi = combinedBaseApi.injectEndpoints({
       invalidatesTags: ["Car"],
     }),
 
-    // Create car with main info (Step 1)
-    createCarMainInfo: builder.mutation<SuccessResponse, FormData>({
-      query: (data) => ({
-        url: `/cars/main-info`,
-        method: "POST",
-        body: data,
-      }),
-      invalidatesTags: ["Car"],
-    }),
-
-    // Update car main info (for drafts)
-    updateCarMainInfo: builder.mutation<
+    // Update car
+    updateCar: builder.mutation<
       SuccessResponse,
       { id: string; data: FormData }
     >({
       query: ({ id, data }) => ({
-        url: `/cars/${id}/main-info`,
-        method: "PUT",
+        url: `/cars/${id}`,
+        method: "PATCH",
         body: data,
       }),
       invalidatesTags: ["Car"],
     }),
 
     // get single Car by id
-    getSingleCarById: builder.query<
-      SuccessResponse<{ car: ICarDetails }>,
-      string
-    >({
-      query: (id) => `/cars/dashboard/details/${id}`,
-      providesTags: ["Car"],
-    }),
-
-    // Get car main info by ID
-    getCarMainInfo: builder.query<SuccessResponse, string>({
-      query: (id) => `/cars/${id}/main-info`,
+    getSingleCarById: builder.query<SuccessResponse<any>, string>({
+      query: (id) => `/cars/${id}`,
       providesTags: ["Car"],
     }),
 
@@ -72,65 +53,11 @@ export const carsApi = combinedBaseApi.injectEndpoints({
       providesTags: ["Car"],
     }),
 
-    // Update car specifications
-    updateCarSpecifications: builder.mutation<
-      SuccessResponse,
-      { id: string; modelVariants: string }
-    >({
-      query: ({ id, modelVariants }) => ({
-        url: `/cars/${id}/car-specs`,
-        method: "POST",
-        body: { modelVariants },
-      }),
-      invalidatesTags: ["Car"],
-    }),
-
-    // Get car specifications
-    getCarSpecifications: builder.query<SuccessResponse<any>, string>({
-      query: (id) => `/cars/${id}/car-specs`,
-      providesTags: ["Car"],
-    }),
-
-    // Update SEO info
-    updateSeoInfo: builder.mutation<
-      SuccessResponse,
-      { id: string; seoData: any }
-    >({
-      query: ({ id, seoData }) => ({
-        url: `/cars/${id}/seo-info`,
-        method: "POST",
-        body: seoData,
-      }),
-      invalidatesTags: ["Car"],
-    }),
-
-    // Get SEO info
-    getSeoInfo: builder.query<SuccessResponse<any>, string>({
-      query: (id) => `/cars/${id}/seo-info`,
-      providesTags: ["Car"],
-    }),
-
-    // Get complete car details
-    getCarDetails: builder.query<SuccessResponse<ICarDetails>, string>({
-      query: (id) => `/cars/details/${id}`,
-      providesTags: ["Car"],
-    }),
-
     // Delete car
     deleteCar: builder.mutation<SuccessResponse, string>({
       query: (id) => ({
         url: `/cars/${id}`,
         method: "DELETE",
-      }),
-      invalidatesTags: ["Car"],
-    }),
-
-    // Update car (for publishing)
-    updateCar: builder.mutation<SuccessResponse, FormData>({
-      query: (data) => ({
-        url: `/cars/${data.get("id")}`,
-        method: "PUT",
-        body: data,
       }),
       invalidatesTags: ["Car"],
     }),
@@ -140,15 +67,7 @@ export const carsApi = combinedBaseApi.injectEndpoints({
 export const {
   useAddCarMutation,
   useGetAllCarsQuery,
-  useCreateCarMainInfoMutation,
-  useUpdateCarMainInfoMutation,
-  useGetCarMainInfoQuery,
   useGetDraftCarsQuery,
-  useUpdateCarSpecificationsMutation,
-  useGetCarSpecificationsQuery,
-  useUpdateSeoInfoMutation,
-  useGetSeoInfoQuery,
-  useGetCarDetailsQuery,
   useDeleteCarMutation,
   useUpdateCarMutation,
   useGetSingleCarByIdQuery,

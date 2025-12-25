@@ -1,13 +1,10 @@
 "use client";
 import React, { useEffect } from "react";
 import { useTranslations } from "next-intl";
-import MainInfoStep from "@/components/Cars/Add/steps/MainInfoStep";
-import { useSearchParams } from "next/navigation";
+import AddCarV2 from "@/components/Cars/_AddV2/AddCarV2";
 
 function CarAdd() {
   const t = useTranslations("AddCar");
-  const searchParams = useSearchParams();
-  const draftId = searchParams.get("draft-id") as string;
 
   useEffect(() => {
     document.title = `${t("title")} | Portal Dashboard`;
@@ -19,7 +16,7 @@ function CarAdd() {
 
   return (
     <div className="w-full">
-      <div>new component</div>
+      <AddCarV2 />
     </div>
   );
 }

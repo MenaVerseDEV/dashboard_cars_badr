@@ -46,14 +46,6 @@ export default function VaraintsHierarchicalForm() {
               ? "عرض جدولي"
               : "عرض شجري"}
           </Button> */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setLanguage(language === "en" ? "ar" : "en")}
-          >
-            <Languages className="h-4 w-4 mr-2" />
-            {language === "en" ? "العربية" : "English"}
-          </Button>
         </div>
       </div>
 
