@@ -83,7 +83,8 @@
     "loading": "جاري التحميل...",
     "deleting": "جاري الحذف...",
     "retry": "إعادة المحاولة",
-    "error": "خطأ"
+    "error": "خطأ",
+    "savingDraft": "جاري الحفظ كمسودة..."
   },
   "Table": {
     "car": "السيارة",
@@ -104,7 +105,10 @@
     "logo": "الشعار",
     "brandName": "اسم الماركة",
     "showModels": "عرض الموديلات",
-    "view": "عرض"
+    "view": "عرض",
+    "moveToDraft": "نقل إلى المسودة",
+    "published": "تم النشر",
+    "draft": "مسودة"
   },
   "Brands": {
     "title": "الماركات",
@@ -163,6 +167,13 @@
       "image": "صورة"
     },
     "specs": {
+      "title": "مواصفات السيارة",
+      "description": "قم بتهيئة الميزات والخيارات التفصيلية لهذه السيارة.",
+      "searchPlaceholder": "بحث عن مواصفة...",
+      "specsAvailable": "مواصفة متوفرة",
+      "choosePlaceholder": "اختر...",
+      "none": "لا يوجد",
+      "noColorsSelected": "لم يتم اختيار ألوان بعد",
       "choose": "اختر",
       "previous": "السابق",
       "saveDraft": "حفظ كمسودة",
@@ -185,7 +196,7 @@
       "metaDescriptionAr": "وصف الميتا (AR)",
       "metaDescriptionEn": "وصف الميتا (EN)",
       "keywords": "الكلمات المفتاحية",
-      "keywordsPlaceholder": "من فضلك أدخل الكلمات المفتاحية مفصولة بفاصلة",
+      "keywordsPlaceholder": "أدخل كلمة مفتاحية واضغط على إضافة",
       "previous": "السابق",
       "saveDraft": "حفظ كمسودة",
       "next": "نشر السيارة",

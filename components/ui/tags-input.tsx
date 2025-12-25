@@ -2,8 +2,10 @@
 
 import type React from "react";
 import { useState, useRef, useEffect, type KeyboardEvent } from "react";
-import { X } from "lucide-react";
+import { X, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "./button";
+import { getCookie } from "cookies-next";
 
 interface TagInputProps extends React.InputHTMLAttributes<HTMLTextAreaElement> {
   initialTags?: string[];
@@ -16,7 +18,7 @@ interface TagInputProps extends React.InputHTMLAttributes<HTMLTextAreaElement> {
 export function TagInput({
   initialTags = [],
   syncTags,
-  placeholder = "Type and press comma to add tags...",
+  placeholder = "Add a keyword...",
   className,
   maxTags = 50,
 
@@ -39,16 +41,15 @@ export function TagInput({
   };
 
   const handleInputChange = (value: string) => {
-    // Always update the input value first
     setInputValue(value);
+  };
 
-    // Then check if we need to create a tag
-    if (value.endsWith(", ")) {
-      const newTag = value.replace(/,\s*$/, "").trim();
-      if (newTag && !tags.includes(newTag) && tags.length < maxTags) {
-        handleTagChange([...tags, newTag]);
-        setInputValue("");
-      }
+  const addTag = () => {
+    const trimmed = inputValue.trim();
+    if (trimmed && !tags.includes(trimmed) && tags.length < maxTags) {
+      handleTagChange([...tags, trimmed]);
+      setInputValue("");
+      inputRef.current?.focus();
     }
   };
 
@@ -56,10 +57,7 @@ export function TagInput({
     // Add tag on Enter key
     if (e.key === "Enter" && inputValue.trim()) {
       e.preventDefault();
-      if (!tags.includes(inputValue.trim()) && tags.length < maxTags) {
-        handleTagChange([...tags, inputValue.trim()]);
-        setInputValue("");
-      }
+      addTag();
     }
 
     // Remove the last tag on Backspace if input is empty
@@ -106,17 +104,28 @@ export function TagInput({
           </button>
         </div>
       ))}
-      <textarea
-        ref={inputRef}
-        value={inputValue}
-        onChange={(e) => handleInputChange(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder={tags.length === 0 ? placeholder : ""}
-        rows={3}
-        className="flex-1 bg-transparent border-none outline-none text-sm min-w-[120px] p-1"
-        // {...props}
-      />
+      <div className="flex gap-2 w-full mt-2 pt-2 border-t border-gray-100 items-center">
+        <textarea
+          ref={inputRef}
+          value={inputValue}
+          onChange={(e) => handleInputChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={tags.length === 0 ? placeholder : ""}
+          rows={1}
+          className="flex-1 bg-transparent border-none outline-none text-sm min-w-[120px] p-1 resize-none"
+        />
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          onClick={addTag}
+          disabled={!inputValue.trim()}
+          className="rounded-lg h-8 px-3 flex items-center gap-1.5 font-bold"
+        >
+          <Plus size={14} />
+          {getCookie("NEXT_LOCALE") === "ar" ? "إضافة" : "Add"}
+        </Button>
+      </div>
     </div>
   );
 }
-

@@ -41,8 +41,8 @@ import {
   useUpdateCarMutation,
 } from "@/redux/features/cars/carsApi";
 import { handleReqWithToaster } from "@/components/shared/handleReqWithToaster";
-import StepLoadingState from "../_Add/shared/StepLoadingState";
-import StepErrorState from "../_Add/shared/StepErrorState";
+import StepLoadingState from "./shared/StepLoadingState";
+import StepErrorState from "./shared/StepErrorState";
 
 // Types
 interface LocalizedValue {
@@ -143,15 +143,22 @@ export default function SpecsInfoStepV2() {
     data: Record<string, LocalizedValue | null>,
     isDraft: boolean
   ) => {
-    const specs: SelectedSpec[] = Object.entries(data)
-      .filter(([_, value]) => value !== null)
+    const specs = Object.entries(data)
+      .filter(
+        ([_, value]) =>
+          value &&
+          typeof value === "object" &&
+          (value.en?.trim() !== "" || value.ar?.trim() !== "")
+      )
       .map(([specsId, value]) => ({
         specsId,
-        selectedValue: value as LocalizedValue,
+        selectedValue: {
+          en: value?.en?.trim() || "",
+          ar: value?.ar?.trim() || "",
+        },
       }));
 
     const loadingMessage = !isDraft ? t("savingSpecs") : t("savingDraft");
-
     handleReqWithToaster(loadingMessage, async () => {
       const formData = new FormData();
       formData.append("specs", JSON.stringify(specs));
@@ -190,12 +197,9 @@ export default function SpecsInfoStepV2() {
       {/* Header */}
       <div className="p-6 border-b border-gray-50 flex items-center justify-between bg-white sticky top-0 z-20">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">
-            {t("title") || "Car Specifications"}
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900">{t("title")}</h2>
           <p className="text-sm text-muted-foreground mt-1">
-            {t("description") ||
-              "Configure the detailed features and options for this vehicle."}
+            {t("description")}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -249,9 +253,7 @@ export default function SpecsInfoStepV2() {
                 size={16}
               />
               <Input
-                placeholder={
-                  locale === "ar" ? "بحث عن مواصفة..." : "Search specs..."
-                }
+                placeholder={t("searchPlaceholder")}
                 className="pl-9 rounded-xl border-gray-200 bg-white"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -325,7 +327,7 @@ export default function SpecsInfoStepV2() {
                   className="bg-white text-gray-500 border-gray-200 py-1 px-3"
                 >
                   {currentCategoryGroup?.variants.length || 0}{" "}
-                  {locale === "ar" ? "مواصفة متوفرة" : "specs available"}
+                  {t("specsAvailable")}
                 </Badge>
               </div>
 
@@ -333,7 +335,7 @@ export default function SpecsInfoStepV2() {
                 {currentCategoryGroup?.variants.map((spec: any) => (
                   <Card
                     key={spec.id}
-                    className="border-gray-100 shadow-sm hover:shadow-md transition-shadow group rounded-2xl overflow-hidden"
+                    className="border-gray-100 shadow-sm hover:shadow-md transition-shadow group rounded-2xl overflow-hidden h-fit"
                   >
                     <CardContent className="p-5 space-y-4">
                       <div className="flex justify-between items-start">
@@ -379,9 +381,7 @@ export default function SpecsInfoStepV2() {
                             >
                               <SelectTrigger className="w-full bg-gray-50 border-gray-100 rounded-xl hover:bg-gray-100/50 transition-all h-11">
                                 <SelectValue
-                                  placeholder={
-                                    locale === "ar" ? "اختر..." : "Choose..."
-                                  }
+                                  placeholder={t("choosePlaceholder")}
                                 />
                               </SelectTrigger>
                               <SelectContent className="rounded-xl border-gray-100 shadow-xl">
@@ -389,7 +389,7 @@ export default function SpecsInfoStepV2() {
                                   value="none"
                                   className="text-gray-400"
                                 >
-                                  {locale === "ar" ? "لا يوجد" : "None"}
+                                  {t("none")}
                                 </SelectItem>
                                 {spec.values[locale]?.map(
                                   (val: string, idx: number) => (
@@ -431,6 +431,7 @@ function ColorPicker({
   variant: any;
   locale: "ar" | "en";
 }) {
+  const t = useTranslations("AddCar.specs");
   const selectedColors = value
     ? value[locale]
         .split(",")
@@ -529,9 +530,7 @@ function ColorPicker({
         ) : (
           <span className="text-xs text-muted-foreground flex items-center gap-2">
             <Info size={14} />
-            {locale === "ar"
-              ? "لم يتم اختيار ألوان بعد"
-              : "No colors selected yet"}
+            {t("noColorsSelected")}
           </span>
         )}
       </div>

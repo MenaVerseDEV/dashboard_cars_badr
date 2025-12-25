@@ -13,7 +13,12 @@ const brandApi = combinedBaseApi.injectEndpoints({
     }),
     // get brand by id
     getBrandById: builder.query<SuccessResponse<ISingleBrand>, string>({
-      query: (id) => `/brands/${id}`,
+      query: (id) => ({
+        url: `/brands/${id}`,
+        headers: {
+          "Accept-Language": "",
+        },
+      }),
       providesTags: ["Brand"],
     }),
 

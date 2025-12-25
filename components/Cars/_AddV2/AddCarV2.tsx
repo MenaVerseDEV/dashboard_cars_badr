@@ -40,6 +40,8 @@ import {
   useGetSingleCarByIdQuery,
   useUpdateCarMutation,
 } from "@/redux/features/cars/carsApi";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function AddCarV2() {
   const locale = useLocale();
@@ -194,16 +196,34 @@ export default function AddCarV2() {
     }
   };
 
-  const onSubmit = async (values: AddCarV2DTO) => {
-    if (!mainImage) {
-      handleReqWithToaster(t("saving"), async () => {
-        throw new Error(
-          locale === "ar" ? "الصورة الأساسية مطلوبة" : "Main image is required"
-        );
-      });
-      return;
-    }
+  const onInvalid = (errors: any) => {
+    // Helper to get the first nested error key
+    const getFirstErrorKey = (obj: any, prefix = ""): string => {
+      const firstKey = Object.keys(obj)[0];
+      if (!firstKey) return prefix;
+      const newPrefix = prefix ? `${prefix}.${firstKey}` : firstKey;
+      if (typeof obj[firstKey] === "object" && !obj[firstKey].message) {
+        return getFirstErrorKey(obj[firstKey], newPrefix);
+      }
+      return newPrefix;
+    };
 
+    const firstError = getFirstErrorKey(errors);
+    if (firstError) {
+      const element =
+        document.getElementsByName(firstError)[0] ||
+        document.getElementById(firstError);
+      element?.scrollIntoView({ behavior: "smooth", block: "center" });
+
+      toast.error(
+        locale === "ar"
+          ? "يرجى ملء الحقول المطلوبة"
+          : "Please fill in the required fields"
+      );
+    }
+  };
+
+  const onSubmit = async (values: AddCarV2DTO) => {
     handleReqWithToaster(t("saving"), async () => {
       const formData = new FormData();
 
@@ -215,7 +235,7 @@ export default function AddCarV2() {
       formData.append("description", JSON.stringify(values.description));
 
       // Images
-      if (mainImage.file) {
+      if (mainImage?.file) {
         formData.append("mainImage", mainImage.file);
       }
 
@@ -324,11 +344,14 @@ export default function AddCarV2() {
       <div className="bg-white rounded-3xl overflow-hidden border border-gray-100">
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(onSubmit, onInvalid)}
             className="p-8 space-y-8"
           >
             {/* Cover image selection */}
-            <div className="grid gap-6 grid-cols-1 md:grid-cols-[300px_1fr] items-start mb-4">
+            <div
+              id="cover-image-section"
+              className="grid gap-6 grid-cols-1 md:grid-cols-[300px_1fr] items-start mb-4"
+            >
               <div className="relative aspect-[4/5] flex-center border-2 border-dashed border-gray-200 bg-gray-50/50 rounded-2xl overflow-hidden group hover:border-primary/30 transition-colors">
                 {mainImage ? (
                   <>
@@ -374,7 +397,9 @@ export default function AddCarV2() {
                     type="file"
                     className="absolute inset-0 opacity-0 cursor-pointer"
                     accept="image/*"
-                    onChange={(e) => handleImageUpload(e, "cover")}
+                    onChange={(e) => {
+                      handleImageUpload(e, "cover");
+                    }}
                   />
                 </label>
               </div>

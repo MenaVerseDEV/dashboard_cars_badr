@@ -12,9 +12,14 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { FileDown } from "lucide-react";
 
-export const useColumns = (onDeleteCar: (carId: string) => void) => {
+export const useColumns = (
+  onDeleteCar: (carId: string) => void,
+  onToggleDraft: (carId: string, isDraft: boolean) => void
+) => {
   const locale = useLocale() as Locale;
   const router = useRouter();
   const t = useTranslations("Table");
@@ -37,11 +42,13 @@ export const useColumns = (onDeleteCar: (carId: string) => void) => {
             />
           )}
           <div className="flex flex-col text-start">
-            <span className="font-medium text-sm">
-              {row.original.metaTitle?.[locale] || row.original.name}
+            <span className="font-bold text-sm text-gray-900 leading-tight">
+              {row.original.metaTitle?.[locale] ||
+                row.original.name?.[locale] ||
+                row.original.name}
             </span>
-            <span className="text-xs text-gray-500">
-              {row.original.model?.name}
+            <span className="text-[11px] font-medium text-gray-400 mt-0.5 uppercase tracking-wider">
+              {row.original.model?.name?.[locale] || row.original.model?.name}
             </span>
           </div>
         </div>
@@ -54,11 +61,13 @@ export const useColumns = (onDeleteCar: (carId: string) => void) => {
       ),
       cell: ({ row }) => (
         <div className="flex flex-col text-center">
-          <span className="font-medium">
-            {row.original.model?.brand?.name || row.original.name}
+          <span className="font-bold text-gray-800">
+            {row.original.model?.brand?.name?.[locale] ||
+              row.original.model?.brand?.name ||
+              t("unspecified")}
           </span>
-          <span className="text-xs text-gray-500">
-            {row.original.model?.name}
+          <span className="text-[11px] font-semibold text-primary/70 mt-0.5">
+            {row.original.model?.name?.[locale] || row.original.model?.name}
           </span>
         </div>
       ),
@@ -102,7 +111,11 @@ export const useColumns = (onDeleteCar: (carId: string) => void) => {
             variant={row.original.draft ? "secondary" : "default"}
             className="flex items-center gap-1 mx-auto"
           >
-            {row.original.draft ? t("draft") : t("published")}
+            {row.original.draft
+              ? t("draft")
+              : locale === "ar"
+              ? "تم النشر"
+              : "Published"}
           </Badge>
         </div>
       ),
@@ -142,8 +155,20 @@ export const useColumns = (onDeleteCar: (carId: string) => void) => {
               <PencilLine className="h-4 w-4" />
               <span>{t("edit")}</span>
             </DropdownMenuItem>
+            {!row.original.draft && (
+              <DropdownMenuItem
+                className="gap-2 cursor-pointer text-orange-600 focus:text-orange-600 focus:bg-orange-50"
+                onClick={() => onToggleDraft(row.original.id, true)}
+              >
+                <FileDown className="h-4 w-4" />
+                <span>
+                  {locale === "ar" ? "نقل إلى المسودة" : "Move to Draft"}
+                </span>
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuSeparator />
             <DropdownMenuItem
-              className="gap-2 text-red-600 focus:text-red-600 cursor-pointer"
+              className="gap-2 text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
               onClick={() => onDeleteCar(row.original.id)}
             >
               <Trash2 className="h-4 w-4 text-red-600" />

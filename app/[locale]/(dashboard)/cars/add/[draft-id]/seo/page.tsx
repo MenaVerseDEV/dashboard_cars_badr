@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
-import SeoInfoStep from "@/components/Cars/_Add/steps/SeoInfoStep";
+import SeoInfoStep from "@/components/Cars/_AddV2/SeoInfoStep";
 import { useParams } from "next/navigation";
 
 export default function DraftSeo() {

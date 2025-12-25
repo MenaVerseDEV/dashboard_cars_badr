@@ -83,7 +83,8 @@
     "loading": "Loading...",
     "deleting": "Deleting...",
     "retry": "Retry",
-    "error": "Error"
+    "error": "Error",
+    "savingDraft": "Saving as Draft..."
   },
   "Table": {
     "car": "Car",
@@ -104,7 +105,10 @@
     "logo": "Logo",
     "brandName": "Brand Name",
     "showModels": "Show Models",
-    "view": "View"
+    "view": "View",
+    "moveToDraft": "Move to Draft",
+    "draft": "Draft",
+    "published": "Published"
   },
   "Brands": {
     "title": "Brands",
@@ -163,6 +167,13 @@
       "image": "Image"
     },
     "specs": {
+      "title": "Car Specifications",
+      "description": "Configure the detailed features and options for this vehicle.",
+      "searchPlaceholder": "Search specs...",
+      "specsAvailable": "specs available",
+      "choosePlaceholder": "Choose...",
+      "none": "None",
+      "noColorsSelected": "No colors selected yet",
       "choose": "Choose",
       "previous": "Previous",
       "saveDraft": "Save as Draft",
@@ -185,7 +196,7 @@
       "metaDescriptionAr": "Meta Description (AR)",
       "metaDescriptionEn": "Meta Description (EN)",
       "keywords": "Keywords",
-      "keywordsPlaceholder": "Type and press comma to add tags...",
+      "keywordsPlaceholder": "Enter a keyword and click Add",
       "previous": "Previous",
       "saveDraft": "Save as Draft",
       "next": "Publish Car",

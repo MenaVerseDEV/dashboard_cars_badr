@@ -45,9 +45,11 @@ export default function DraftCars() {
   const handlePublishCar = async (carId: string) => {
     handleReqWithToaster(t("publishing"), async () => {
       const formData = new FormData();
-      formData.append("id", carId);
-      formData.append("showCar", "true");
-      await updateCar(formData).unwrap();
+      formData.append("draft", "false");
+      await updateCar({
+        id: carId,
+        data: formData,
+      }).unwrap();
     });
   };
 

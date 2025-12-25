@@ -32,7 +32,9 @@ const baseQuery = fetchBaseQuery({
   baseUrl: API_URL,
   prepareHeaders: (headers, { getState }) => {
     const loanguage = getCookie("NEXT_LOCALE") as "en" | "ar";
-    headers.set("Accept-Language", loanguage || "en");
+    if (!headers.has("Accept-Language")) {
+      headers.set("Accept-Language", loanguage || "en");
+    }
 
     const token = (getState() as RootState).auth.token;
     if (token) headers.set("Authorization", `Bearer ${token}`);

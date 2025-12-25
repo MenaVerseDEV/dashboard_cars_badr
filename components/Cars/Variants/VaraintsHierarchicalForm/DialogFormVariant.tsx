@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -27,6 +28,10 @@ type Props = {
     ar: string;
     en: string;
   };
+  description?: {
+    ar: string;
+    en: string;
+  };
   image?: string;
   sendedValues?: {
     ar: string[];
@@ -39,20 +44,22 @@ function DialogFormVariant({
   variantCategoryId,
   variantId,
   name,
+  description,
   image,
   sendedValues,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const [variantCategory, setVariantCategory] = useState({
+  const [variant, setVariant] = useState({
     nameEn: name?.en ?? "",
     nameAr: name?.ar ?? "",
+    descEn: description?.en ?? "",
+    descAr: description?.ar ?? "",
     image: null as File | null | string,
   });
   const [imagePreview, setImagePreview] = useState<string | null>(
     image ?? null
   );
 
-  // New localized values state
   const [valuesAr, setValuesAr] = useState<string[]>(sendedValues?.ar ?? [""]);
   const [valuesEn, setValuesEn] = useState<string[]>(sendedValues?.en ?? [""]);
 
@@ -61,37 +68,78 @@ function DialogFormVariant({
   const [updateVariant, { isLoading: updateVariantLoading }] =
     useUpdateVariantMutation();
 
-  const handleAddVariantCategory = async () => {
-    const formData = new FormData();
-    formData.append("name", variantCategory.nameEn); // Keeping it simple for now based on sample
-    // In a real localized app, we might need name[ar] and name[en]
-
-    valuesAr.forEach((value, index) =>
-      formData.append(`values[ar][${index}]`, value)
-    );
-    valuesEn.forEach((value, index) =>
-      formData.append(`values[en][${index}]`, value)
-    );
-
-    formData.append("categoryId", variantCategoryId);
-
-    if (variantCategory.image instanceof File) {
-      formData.append("image", variantCategory.image);
+  useEffect(() => {
+    if (name) {
+      setVariant((prev) => ({ ...prev, nameAr: name.ar, nameEn: name.en }));
     }
+    if (description) {
+      setVariant((prev) => ({
+        ...prev,
+        descAr: description.ar,
+        descEn: description.en,
+      }));
+    }
+    if (sendedValues) {
+      setValuesAr(sendedValues.ar);
+      setValuesEn(sendedValues.en);
+    }
+  }, [name, description, sendedValues]);
 
+  const handleAddVariant = async () => {
     handleReqWithToaster(
-      variantId ? "جاري تعديل المتغير..." : "جاري إضافة المتغير...",
+      variantId ? "جاري تعديل المتغير..." : "جاري إضافة متغير جديد...",
       async () => {
-        if (variantId)
+        const formData = new FormData();
+
+        // JSON format as per CURL
+        formData.append(
+          "name",
+          JSON.stringify({
+            ar: variant.nameAr,
+            en: variant.nameEn,
+          })
+        );
+
+        formData.append(
+          "description",
+          JSON.stringify({
+            ar: variant.descAr,
+            en: variant.descEn,
+          })
+        );
+
+        formData.append(
+          "values",
+          JSON.stringify({
+            ar: valuesAr.filter((v) => v.trim() !== ""),
+            en: valuesEn.filter((v) => v.trim() !== ""),
+          })
+        );
+
+        formData.append("categoryId", variantCategoryId);
+
+        if (variant.image instanceof File) {
+          formData.append("image", variant.image);
+        }
+
+        if (variantId) {
           await updateVariant({
             id: variantId,
             data: formData,
           }).unwrap();
-        else await addVariant(formData).unwrap();
+        } else {
+          await addVariant(formData).unwrap();
+        }
 
         setIsOpen(false);
         if (!variantId) {
-          setVariantCategory({ nameEn: "", nameAr: "", image: null });
+          setVariant({
+            nameEn: "",
+            nameAr: "",
+            descEn: "",
+            descAr: "",
+            image: null,
+          });
           setValuesAr([""]);
           setValuesEn([""]);
           setImagePreview(null);
@@ -124,7 +172,7 @@ function DialogFormVariant({
 
   const handleImageChange = (file: File | null) => {
     if (file) {
-      setVariantCategory({ ...variantCategory, image: file });
+      setVariant({ ...variant, image: file });
       const reader = new FileReader();
       reader.onloadend = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
@@ -134,14 +182,14 @@ function DialogFormVariant({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-3xl p-0 overflow-hidden border-none rounded-3xl max-h-[90vh] flex flex-col">
-        <div className="bg-primary p-8 text-white">
+      <DialogContent className="max-w-3xl p-0 overflow-hidden border-none rounded-3xl max-h-[95vh] flex flex-col">
+        <div className="bg-primary p-8 text-white shrink-0">
           <DialogHeader>
             <DialogTitle className="text-2xl font-black">
-              {variantId ? "تعديل المتغير" : "إضافة متغير فرعي جديد"}
+              {variantId ? "تعديل المتغير" : "إضافة متغير جديد"}
             </DialogTitle>
             <DialogDescription className="text-primary-foreground/80 font-medium">
-              أدخل اسم المتغير وقيمه باللغتين العربية والإنجليزية
+              أدخل اسم المتغير، وصفه، وقيمه المتاحة باللغتين
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -150,7 +198,7 @@ function DialogFormVariant({
           className="flex-1 overflow-y-auto p-8 space-y-8"
           onSubmit={(e) => {
             e.preventDefault();
-            handleAddVariantCategory();
+            handleAddVariant();
           }}
         >
           <div className="grid grid-cols-2 gap-6">
@@ -159,20 +207,18 @@ function DialogFormVariant({
                 htmlFor="nameAr"
                 className="text-sm font-bold text-gray-700"
               >
-                اسم المتغير (عربي)
+                الاسم (عربي) <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="nameAr"
-                value={variantCategory.nameAr}
+                value={variant.nameAr}
                 className="h-12 rounded-xl border-gray-100 bg-gray-50/50 focus:bg-white transition-all"
                 onChange={(e) =>
-                  setVariantCategory({
-                    ...variantCategory,
-                    nameAr: e.target.value,
-                  })
+                  setVariant({ ...variant, nameAr: e.target.value })
                 }
-                placeholder="مثال: نوع الغطاء"
+                placeholder="مثال: نوع المحرك"
                 dir="rtl"
+                required
               />
             </div>
             <div className="space-y-2">
@@ -180,26 +226,62 @@ function DialogFormVariant({
                 htmlFor="nameEn"
                 className="text-sm font-bold text-gray-700"
               >
-                Variant Name (EN)
+                Name (EN) <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="nameEn"
-                value={variantCategory.nameEn}
+                value={variant.nameEn}
                 className="h-12 rounded-xl border-gray-100 bg-gray-50/50 focus:bg-white transition-all"
                 onChange={(e) =>
-                  setVariantCategory({
-                    ...variantCategory,
-                    nameEn: e.target.value,
-                  })
+                  setVariant({ ...variant, nameEn: e.target.value })
                 }
-                placeholder="e.g. Paint Type"
+                placeholder="e.g. Engine Type"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label
+                htmlFor="descAr"
+                className="text-sm font-bold text-gray-700"
+              >
+                الوصف (عربي)
+              </Label>
+              <Textarea
+                id="descAr"
+                value={variant.descAr}
+                className="rounded-xl border-gray-100 bg-gray-50/50 focus:bg-white transition-all min-h-[80px] resize-none px-4"
+                onChange={(e) =>
+                  setVariant({ ...variant, descAr: e.target.value })
+                }
+                placeholder="وصف المتغير بالعربي..."
+                dir="rtl"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label
+                htmlFor="descEn"
+                className="text-sm font-bold text-gray-700"
+              >
+                Description (EN)
+              </Label>
+              <Textarea
+                id="descEn"
+                value={variant.descEn}
+                className="rounded-xl border-gray-100 bg-gray-50/50 focus:bg-white transition-all min-h-[80px] resize-none px-4"
+                onChange={(e) =>
+                  setVariant({ ...variant, descEn: e.target.value })
+                }
+                placeholder="Variant description in English..."
               />
             </div>
           </div>
 
           <div className="space-y-4">
-            <div className="flex items-center justify-between border-b pb-2">
-              <Label className="text-lg font-black text-gray-900 px-1">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-2">
+              <Label className="text-lg font-black text-gray-900">
                 القيم المتاحة (Values)
               </Label>
               <Button
@@ -210,7 +292,7 @@ function DialogFormVariant({
                 className="rounded-xl px-4 h-9 shadow-md shadow-primary/10"
               >
                 <Plus className="h-4 w-4 mr-1.5" />
-                إضافة قيمة جديدة
+                إضافة قيمة
               </Button>
             </div>
 
@@ -218,7 +300,7 @@ function DialogFormVariant({
               {valuesAr.map((_, index) => (
                 <div
                   key={index}
-                  className="flex gap-4 items-end bg-gray-50/30 p-4 rounded-2xl border border-gray-100/50 group hover:border-primary/20 transition-all"
+                  className="flex gap-4 items-end bg-gray-50/30 p-4 rounded-2xl border border-gray-100/50 hover:border-primary/20 transition-all group"
                 >
                   <div className="flex-1 space-y-2">
                     <Label className="text-[10px] uppercase font-black text-gray-400">
@@ -230,7 +312,7 @@ function DialogFormVariant({
                       onChange={(e) =>
                         handleValueChange(index, e.target.value, "ar")
                       }
-                      placeholder="قيمة بالعربي"
+                      placeholder="بنزين"
                       dir="rtl"
                     />
                   </div>
@@ -244,7 +326,7 @@ function DialogFormVariant({
                       onChange={(e) =>
                         handleValueChange(index, e.target.value, "en")
                       }
-                      placeholder="Value in English"
+                      placeholder="Petrol"
                     />
                   </div>
                   {valuesAr.length > 1 && (
@@ -266,13 +348,13 @@ function DialogFormVariant({
           <div className="bg-gray-50/50 p-6 rounded-2xl border border-dashed border-gray-200">
             <ImageUpload
               id="image"
-              label="أيقونة المتغير"
+              label="أيقونة المتغير (اختياري)"
               imagePreview={imagePreview}
               onImageChange={handleImageChange}
             />
           </div>
 
-          <DialogFooter className="pt-4 flex gap-3">
+          <DialogFooter className="pt-4 flex gap-3 shrink-0">
             <Button
               type="button"
               variant="outline"

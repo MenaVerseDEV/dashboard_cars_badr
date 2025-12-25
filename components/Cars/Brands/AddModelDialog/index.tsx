@@ -91,14 +91,14 @@ export function AddModelDialog({
     );
   };
   useEffect(() => {
-    if (model?.data) {
+    if (open && model?.data) {
       setModelNameAr(model.data.name.ar);
       setModelNameEn(model.data.name.en);
       setModelType(model.data.modelType.id);
       setManufacturingYear(model.data.year);
     }
-  }, [model?.data]);
-  if (modelLoading) return <p>loading</p>;
+  }, [model?.data, open]);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -111,14 +111,21 @@ export function AddModelDialog({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="p-6 rtl">
+      <DialogContent className="p-6 rtl max-w-md">
         <DialogHeader>
           <DialogTitle className="text-center text-xl font-semibold">
             {modelId ? "تعديل " : "إضافة"} موديل جديد
           </DialogTitle>
         </DialogHeader>
 
-        <ConditionedWrapper condition={!modelLoading}>
+        {modelLoading ? (
+          <div className="flex flex-col items-center justify-center py-12 gap-4">
+            <span className="loading loading-spinner loading-lg text-primary"></span>
+            <p className="text-muted-foreground animate-pulse">
+              جاري تحميل بيانات الموديل...
+            </p>
+          </div>
+        ) : (
           <div className="space-y-6 my-6">
             <div className="space-y-2">
               <Label htmlFor="modelNameAr" className="text-right block">
@@ -182,15 +189,20 @@ export function AddModelDialog({
               />
             </div>
           </div>
-        </ConditionedWrapper>
+        )}
 
         <Button
           onClick={handleSubmit}
-          className="w-full bg-red-500 hover:bg-red-600 text-white"
+          className="w-full"
+          variant="primary"
           size="lg"
-          disabled={isLoading || updateLoading}
+          disabled={isLoading || updateLoading || modelLoading}
         >
-          {isLoading || updateLoading ? "جارٍ التحميل..." : "إضافة"}
+          {isLoading || updateLoading
+            ? "جاري الحفظ..."
+            : modelId
+            ? "حفظ التعديلات"
+            : "إضافة"}
         </Button>
       </DialogContent>
     </Dialog>

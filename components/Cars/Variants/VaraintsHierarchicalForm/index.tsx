@@ -1,110 +1,74 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useLocale, useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
-import { Languages, LayoutList, LayoutGrid, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 
-import TableView from "./table-view";
 import TreeView from "./tree-view";
-import DialogForm from "./dialog-form";
-import {
-  useAddVariantMutation,
-  useGetAllVariantCategoriesQuery,
-} from "@/redux/features/variants/variantsApi";
-import Loading from "@/app/[locale]/loading";
+import { useGetAllVariantCategoriesQuery } from "@/redux/features/variants/variantsApi";
 import DialogFormVariantCategory from "./DialogFormVariantCategory";
-// import ConditionedWrapper from "@/components/shared/ConditionedWrapper";
 import TreeViewSkeleton from "./tree-view-skeleton";
 import PermissionCondition from "@/components/shared/PermissionCondation";
+import { Button } from "@/components/ui/button";
 
 export default function VaraintsHierarchicalForm() {
-  const [language, setLanguage] = useState<"en" | "ar">("ar");
-  // const [viewMode, setViewMode] = useState<"tree" | "table">("tree");
+  const locale = useLocale() as "ar" | "en";
+  const t = useTranslations("Table");
+
   const { data: variantCategories, isLoading: variantCategoriesLoading } =
     useGetAllVariantCategoriesQuery();
 
   return (
-    <div className={language === "ar" ? "rtl" : ""}>
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex gap-2">
-          {/* <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setViewMode(viewMode === "tree" ? "table" : "tree")}
-          >
-            {viewMode === "tree" ? (
-              <LayoutList className="h-4 w-4 mr-2" />
-            ) : (
-              <LayoutGrid className="h-4 w-4 mr-2" />
-            )}
-            {language === "en"
-              ? viewMode === "tree"
-                ? "Table View"
-                : "Tree View"
-              : viewMode === "tree"
-              ? "عرض جدولي"
-              : "عرض شجري"}
-          </Button> */}
-        </div>
-      </div>
-
-      <Card className="mb-6">
-        <CardContent className="p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-medium">
-              {language === "en" ? "Variants" : "المتغيرات"}
-            </h3>
+    <div className={locale === "ar" ? "rtl" : "ltr"}>
+      <Card className="mb-6 border-none shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-[32px] overflow-hidden">
+        <CardContent className="p-8 font-primary">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 text-start">
+            <div>
+              <h3 className="text-24 font-black text-gray-900 leading-tight">
+                {locale === "ar"
+                  ? "هيكل المواصفات"
+                  : "Specifications Hierarchy"}
+              </h3>
+              <p className="text-sm font-medium text-gray-400 mt-1">
+                {locale === "ar"
+                  ? "إدارة فئات مواصفات السيارة وخياراتها التفصيلية في النظام."
+                  : "Manage car specification categories and their detailed options."}
+              </p>
+            </div>
             <PermissionCondition action="create" moduleName="خصائص السيارات">
               <DialogFormVariantCategory>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  {language === "en" ? "Add Variant" : "إضافة متغير"}
+                <Button
+                  variant="primary"
+                  className="rounded-2xl px-8 h-12 font-bold shadow-lg shadow-primary/20"
+                >
+                  <Plus className="h-5 w-5 mr-1" />
+                  {locale === "ar" ? "إضافة قسم" : "Add Category"}
                 </Button>
               </DialogFormVariantCategory>
             </PermissionCondition>
           </div>
 
-          {variantCategories?.data?.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground">
-              {language === "en"
-                ? "No variants added yet. Click the 'Add Variant' button to get started."
-                : "لم تتم إضافة متغيرات بعد. انقر على زر 'إضافة متغير' للبدء."}
-            </div>
-          )}
+          {variantCategories?.data?.length === 0 &&
+            !variantCategoriesLoading && (
+              <div className="text-center py-16 bg-gray-50/50 rounded-[24px] border-2 border-dashed border-gray-100 italic">
+                <p className="text-gray-400 font-medium text-lg">
+                  {locale === "en"
+                    ? "No specifications found. Start by adding your first category."
+                    : "لم يتم العثور على مواصفات. ابدأ بإضافة القسم الأول الخاص بك."}
+                </p>
+              </div>
+            )}
 
-          {/* {viewMode === "tree" ? ( */}
           {variantCategoriesLoading ? (
             <TreeViewSkeleton />
           ) : (
             <TreeView
               variants={variantCategories?.data ?? []}
-              language={language}
+              language={locale}
             />
           )}
-
-          {/* ) : (
-             <TableView
-              variants={variants}
-              language={language}
-              openEditDialog={openEditDialog}
-              openAddSubVariantDialog={openAddSubVariantDialog}
-              openAddValueDialog={openAddValueDialog}
-              deleteVariant={handleDeleteVariant}
-              deleteSubVariant={handleDeleteSubVariant}
-              deleteValue={handleDeleteValue}
-            />
-          )} */}
         </CardContent>
       </Card>
-
-      {/* <DialogForm
-        dialogState={dialogState}
-        language={language}
-        closeDialog={closeDialog}
-        handleDialogInputChange={handleDialogInputChange}
-        saveItemFromDialog={saveItemFromDialog}
-      /> */}
     </div>
   );
 }

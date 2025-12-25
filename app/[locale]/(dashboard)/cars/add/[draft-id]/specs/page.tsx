@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect } from "react";
-import { useParams } from "next/navigation";
 import SpecsInfoStepV2 from "@/components/Cars/_AddV2/SpecsInfoStepV2";
 
 export default function DraftSpecifications() {

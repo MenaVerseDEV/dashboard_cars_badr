@@ -17,6 +17,7 @@ import { motion } from "framer-motion";
 import {
   useGetAllCarsQuery,
   useDeleteCarMutation,
+  useUpdateCarMutation,
 } from "@/redux/features/cars/carsApi";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -35,6 +36,7 @@ export default function Cars() {
   const t = useTranslations("Cars");
   const commonT = useTranslations("Common");
   const [deleteCar, { isLoading: isDeleting }] = useDeleteCarMutation();
+  const [updateCar, { isLoading: isUpdating }] = useUpdateCarMutation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [carToDelete, setCarToDelete] = useState<string | null>(null);
 
@@ -60,9 +62,20 @@ export default function Cars() {
       });
     }
   };
+  const handleToggleDraft = async (carId: string, isDraft: boolean) => {
+    const message = isDraft ? commonT("savingDraft") : t("publishing");
+    handleReqWithToaster(message, async () => {
+      const formData = new FormData();
+      formData.append("draft", isDraft.toString());
+      await updateCar({
+        id: carId,
+        data: formData,
+      }).unwrap();
+    });
+  };
 
   const searchParams = useSearchParams();
-  const columns = useColumns(handleDeleteCar);
+  const columns = useColumns(handleDeleteCar, handleToggleDraft);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const isRtl = locale === "ar";

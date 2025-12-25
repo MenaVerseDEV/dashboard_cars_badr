@@ -26,9 +26,13 @@ export function AddBrandDialog({ id }: { id?: string }) {
   const [logo, setLogo] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
-  const { data: brand, isLoading: loadBrand } = useGetBrandByIdQuery(id ?? "", {
-    skip: !id,
-  });
+  const { data: brand, isFetching: loadBrand } = useGetBrandByIdQuery(
+    id ?? "",
+    {
+      skip: !id || !open,
+    }
+  );
+  console.log(brand);
   const [addBrand, { isLoading }] = useAddBrandMutation();
   const [updateBrand, { isLoading: updateLoading }] = useUpdateBrandMutation();
 
@@ -70,12 +74,12 @@ export function AddBrandDialog({ id }: { id?: string }) {
   };
 
   useEffect(() => {
-    if (brand?.data) {
+    if (open && brand?.data) {
       setBrandNameAr(brand.data.name.ar);
       setBrandNameEn(brand.data.name.en);
       setLogoPreview(brand.data.image);
     }
-  }, [brand]);
+  }, [brand, open]);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -100,72 +104,79 @@ export function AddBrandDialog({ id }: { id?: string }) {
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
-          <div className="flex flex-col items-center gap-4">
-            <p className="text-sm text-muted-foreground text-center">
-              قم برفع الشعار بصيغة SVG أو PNG
-              <br />
-              بأبعاد لا تقل عن 1000 بكسل
-            </p>
+        {loadBrand ? (
+          <div className="flex justify-center py-8">
+            <span className="loading loading-spinner loading-md text-primary"></span>
+            جاري تحميل البيانات...
+          </div>
+        ) : (
+          <>
+            <div className="flex flex-col items-center gap-4">
+              <p className="text-sm text-muted-foreground text-center">
+                قم برفع الشعار بصيغة SVG أو PNG
+                <br />
+                بأبعاد لا تقل عن 1000 بكسل
+              </p>
 
-            <div className="w-24 h-24 rounded-full border flex items-center justify-center overflow-hidden">
-              {logoPreview && (
-                <img
-                  src={logoPreview}
-                  alt="Brand Logo"
-                  className="w-full h-full object-contain"
+              <div className="w-24 h-24 rounded-full border flex items-center justify-center overflow-hidden">
+                {logoPreview && (
+                  <img
+                    src={logoPreview}
+                    alt="Brand Logo"
+                    className="w-full h-full object-contain"
+                  />
+                )}
+              </div>
+
+              <Button variant="outline" className="relative">
+                اختر من الجهاز
+                <input
+                  type="file"
+                  className="absolute w-full h-full top-0 left-0 opacity-0 cursor-pointer"
+                  accept=".svg,.png"
+                  onChange={handleFileChange}
                 />
-              )}
+              </Button>
             </div>
 
-            <Button variant="outline" className="relative">
-              اختر من الجهاز
-              <input
-                type="file"
-                className="absolute w-full h-full top-0 left-0 opacity-0 cursor-pointer"
-                accept=".svg,.png"
-                onChange={handleFileChange}
-              />
-            </Button>
-          </div>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="brand-name-ar" className="block text-start">
+                  اسم الماركة
+                </Label>
+                <Input
+                  id="brand-name-ar"
+                  value={brandNameAr}
+                  onChange={(e) => setBrandNameAr(e.target.value)}
+                  className="text-right"
+                  placeholder="مرسيدس بنز"
+                />
+              </div>
 
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="brand-name-ar" className="block text-start">
-                اسم الماركة
-              </Label>
-              <Input
-                id="brand-name-ar"
-                value={brandNameAr}
-                onChange={(e) => setBrandNameAr(e.target.value)}
-                className="text-right"
-                placeholder="مرسيدس بنز"
-              />
+              <div className="space-y-2">
+                <Label htmlFor="brand-name-en" className="block text-end">
+                  Brand Name
+                </Label>
+                <Input
+                  id="brand-name-en"
+                  value={brandNameEn}
+                  onChange={(e) => setBrandNameEn(e.target.value)}
+                  placeholder="Mercedes Benz"
+                />
+              </div>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="brand-name-en" className="block text-end">
-                Brand Name
-              </Label>
-              <Input
-                id="brand-name-en"
-                value={brandNameEn}
-                onChange={(e) => setBrandNameEn(e.target.value)}
-                placeholder="Mercedes Benz"
-              />
-            </div>
-          </div>
-        </div>
+          </>
+        )}
 
         <Button
           className="w-full"
           variant="primary"
           size="lg"
           onClick={handleSubmit}
-          disabled={isLoading || updateLoading}
+          disabled={isLoading || updateLoading || loadBrand}
         >
           <Check className="h-4 w-4 mr-2" />
-          حفظ التعديلات
+          {id ? "حفظ التعديلات" : "إضافة ماركة"}
         </Button>
       </DialogContent>
     </Dialog>

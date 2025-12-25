@@ -17,9 +17,10 @@ import { handleReqWithToaster } from "@/components/shared/handleReqWithToaster";
 import { TagInput } from "@/components/ui/tags-input";
 import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, Loader, Save } from "lucide-react";
-import StepLoadingState from "../shared/StepLoadingState";
-import StepErrorState from "../shared/StepErrorState";
+import StepLoadingState from "./shared/StepLoadingState";
+import StepErrorState from "./shared/StepErrorState";
 import { useLocale, useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 
 export const metaDataSchema = (t: any) =>
   z.object({
@@ -110,15 +111,31 @@ export default function SeoInfoStep({ draftId }: { draftId: string }) {
     if (isValid) {
       form.handleSubmit((data) => onSubmit(data, mode))();
     } else {
-      const errors = form.formState.errors;
-      const errorMessages = Object.values(errors)
-        .map((error: any) => error?.message)
-        .filter(Boolean);
+      // Find first error and scroll to it
+      const errorKeys = Object.keys(form.formState.errors);
+      if (errorKeys.length > 0) {
+        const firstErrorKey = errorKeys[0];
+        // Special case for metaKeywords which is handled differently
+        const elementId =
+          firstErrorKey === "metaKeywords" ? "keywords-section" : undefined;
 
-      if (errorMessages.length > 0) {
-        toast.error(errorMessages[0]);
-      } else {
-        toast.error(t("requiredFields"));
+        if (elementId) {
+          document
+            .getElementById(elementId)
+            ?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+
+        const errors = form.formState.errors;
+        const errorMessages = Object.values(errors)
+          .map((error: any) => error?.message)
+          .filter(Boolean);
+
+        toast.error(errorMessages[0] || t("requiredFields"), {
+          description:
+            locale === "ar"
+              ? "يرجى التحقق من الحقول المطلوبة"
+              : "Please check the required fields",
+        });
       }
     }
   };
@@ -192,7 +209,15 @@ export default function SeoInfoStep({ draftId }: { draftId: string }) {
             />
           </div>
 
-          <div className="col-span-1 md:col-span-2 bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
+          <div
+            id="keywords-section"
+            className={cn(
+              "col-span-1 md:col-span-2 overflow-hidden p-6 rounded-2xl border transition-all",
+              form.formState.errors.metaKeywords
+                ? "border-red-500 bg-red-50/10 shadow-[0_0_15px_rgba(239,68,68,0.1)]"
+                : "border-gray-100 bg-gray-50/50"
+            )}
+          >
             <label
               dir={locale === "ar" ? "rtl" : "ltr"}
               htmlFor="tags"
@@ -209,8 +234,8 @@ export default function SeoInfoStep({ draftId }: { draftId: string }) {
               className="border-gray-200 focus-within:border-primary/30 transition-colors bg-white min-h-[50px] rounded-xl"
             />
             {form.formState.errors.metaKeywords && (
-              <p className="text-xs font-medium text-red-500 mt-2 flex items-center gap-1">
-                <span className="w-1 h-1 bg-red-500 rounded-full" />
+              <p className="text-sm font-bold text-red-600 mt-3 flex items-center gap-2 animate-pulse">
+                <span className="w-2 h-2 bg-red-600 rounded-full" />
                 {form.formState.errors.metaKeywords?.message as string}
               </p>
             )}
