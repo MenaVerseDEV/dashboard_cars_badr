@@ -1,6 +1,7 @@
 import { combinedBaseApi, SuccessResponse } from "@/redux/app/baseApi";
 import { IPagination } from "@/types";
 import { IAddVariantDto, ICategoryVariants, ISpec } from "@/types/variant";
+import { getCookie } from "cookies-next";
 
 const variantApi = combinedBaseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -13,6 +14,10 @@ const variantApi = combinedBaseApi.injectEndpoints({
       query: () => ({
         url: `/specs?limit=100`, // Fetch all to group them
       }),
+      serializeQueryArgs: ({ endpointName }) => {
+        const locale = getCookie("NEXT_LOCALE") || "ar";
+        return `${endpointName}-${locale}`;
+      },
       transformResponse: (response: SuccessResponse<ISpec[]>) => {
         const grouped: { [key: string]: ICategoryVariants } = {};
 

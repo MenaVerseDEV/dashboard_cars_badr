@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,8 +19,11 @@ import {
   useUpdateBrandMutation,
 } from "@/redux/features/brand/brandApi";
 import { handleReqWithToaster } from "@/components/shared/handleReqWithToaster";
+import { useTranslations, useLocale } from "next-intl";
 
 export function AddBrandDialog({ id }: { id?: string }) {
+  const t = useTranslations("Brands");
+  const locale = useLocale();
   const [open, setOpen] = useState(false);
   const [brandNameAr, setBrandNameAr] = useState("");
   const [brandNameEn, setBrandNameEn] = useState("");
@@ -32,7 +36,7 @@ export function AddBrandDialog({ id }: { id?: string }) {
       skip: !id || !open,
     }
   );
-  console.log(brand);
+
   const [addBrand, { isLoading }] = useAddBrandMutation();
   const [updateBrand, { isLoading: updateLoading }] = useUpdateBrandMutation();
 
@@ -56,21 +60,18 @@ export function AddBrandDialog({ id }: { id?: string }) {
     formData.append("name[en]", brandNameEn);
     if (logo) formData.append("image", logo);
 
-    handleReqWithToaster(
-      id ? "جاري تعديل ماركة" : "جاري إضافة ماركة",
-      async () => {
-        if (id) {
-          await updateBrand({ id, brand: formData }).unwrap();
-        } else {
-          await addBrand(formData).unwrap();
-        }
-        setBrandNameAr("");
-        setBrandNameEn("");
-        setLogo(null);
-        setLogoPreview(null);
-        setOpen(false);
+    handleReqWithToaster(id ? t("updating") : t("adding"), async () => {
+      if (id) {
+        await updateBrand({ id, brand: formData }).unwrap();
+      } else {
+        await addBrand(formData).unwrap();
       }
-    );
+      setBrandNameAr("");
+      setBrandNameEn("");
+      setLogo(null);
+      setLogoPreview(null);
+      setOpen(false);
+    });
   };
 
   useEffect(() => {
@@ -80,6 +81,7 @@ export function AddBrandDialog({ id }: { id?: string }) {
       setLogoPreview(brand.data.image);
     }
   }, [brand, open]);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -88,96 +90,119 @@ export function AddBrandDialog({ id }: { id?: string }) {
             onClick={() => setOpen(true)}
             width={20}
             height={20}
-            className="cursor-pointer"
+            className="cursor-pointer text-gray-400 hover:text-primary transition-colors"
           />
         ) : (
-          <Button size="lg" className="w-full md:max-w-[250px] gap-2">
+          <Button
+            size="lg"
+            className="w-full md:max-w-[250px] gap-2 rounded-xl"
+          >
             <CirclePlus className="h-5 w-5" />
-            إضافة ماركة جديدة
+            {t("addBrand")}
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] p-6 rtl">
-        <DialogHeader>
-          <DialogTitle className="text-center text-xl font-semibold">
-            {id ? "تعديل الماركة" : "إضافة ماركة جديدة"}
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent className="max-w-md p-0 overflow-hidden border-none rounded-3xl flex flex-col">
+        <div className="bg-primary p-8 text-white shrink-0">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black">
+              {id ? t("editBrand") : t("addBrand")}
+            </DialogTitle>
+            <DialogDescription className="text-primary-foreground/80 font-medium">
+              {t("uploadLogo")}
+            </DialogDescription>
+          </DialogHeader>
+        </div>
 
-        {loadBrand ? (
-          <div className="flex justify-center py-8">
-            <span className="loading loading-spinner loading-md text-primary"></span>
-            جاري تحميل البيانات...
-          </div>
-        ) : (
-          <>
-            <div className="flex flex-col items-center gap-4">
-              <p className="text-sm text-muted-foreground text-center">
-                قم برفع الشعار بصيغة SVG أو PNG
-                <br />
-                بأبعاد لا تقل عن 1000 بكسل
-              </p>
+        <div className="flex-1 overflow-y-auto p-8 space-y-8">
+          {loadBrand ? (
+            <div className="flex flex-col items-center justify-center py-12 gap-4">
+              <span className="loading loading-spinner loading-lg text-primary"></span>
+              <p className="text-gray-500 font-medium">{t("loading")}</p>
+            </div>
+          ) : (
+            <>
+              <div className="flex flex-col items-center gap-6">
+                <div className="w-28 h-28 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden bg-gray-50 group hover:border-primary/50 transition-all">
+                  {logoPreview ? (
+                    <img
+                      src={logoPreview}
+                      alt="Brand Logo"
+                      className="w-full h-full object-contain p-2"
+                    />
+                  ) : (
+                    <div className="text-gray-400 flex flex-col items-center gap-2">
+                      <CirclePlus className="h-8 w-8" />
+                    </div>
+                  )}
+                </div>
 
-              <div className="w-24 h-24 rounded-full border flex items-center justify-center overflow-hidden">
-                {logoPreview && (
-                  <img
-                    src={logoPreview}
-                    alt="Brand Logo"
-                    className="w-full h-full object-contain"
+                <div className="w-full flex flex-col gap-2">
+                  <p className="text-xs text-muted-foreground text-center px-4">
+                    {t("dimensions")}
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="relative h-12 rounded-xl border-gray-100 bg-gray-50/50 hover:bg-gray-100 transition-all font-bold"
+                  >
+                    {t("chooseFile")}
+                    <input
+                      type="file"
+                      className="absolute w-full h-full top-0 left-0 opacity-0 cursor-pointer"
+                      accept=".svg,.png"
+                      onChange={handleFileChange}
+                    />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="brand-name-ar"
+                    className="text-sm font-bold text-gray-700"
+                  >
+                    {t("nameAr")}
+                  </Label>
+                  <Input
+                    id="brand-name-ar"
+                    value={brandNameAr}
+                    onChange={(e) => setBrandNameAr(e.target.value)}
+                    className="h-12 rounded-xl border-gray-100 bg-gray-50/50 focus:bg-white transition-all"
+                    placeholder={t("placeholderAr")}
+                    dir="rtl"
                   />
-                )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="brand-name-en"
+                    className="text-sm font-bold text-gray-700"
+                  >
+                    {t("nameEn")}
+                  </Label>
+                  <Input
+                    id="brand-name-en"
+                    value={brandNameEn}
+                    onChange={(e) => setBrandNameEn(e.target.value)}
+                    className="h-12 rounded-xl border-gray-100 bg-gray-50/50 focus:bg-white transition-all"
+                    placeholder={t("placeholderEn")}
+                  />
+                </div>
               </div>
 
-              <Button variant="outline" className="relative">
-                اختر من الجهاز
-                <input
-                  type="file"
-                  className="absolute w-full h-full top-0 left-0 opacity-0 cursor-pointer"
-                  accept=".svg,.png"
-                  onChange={handleFileChange}
-                />
+              <Button
+                className="w-full h-14 rounded-2xl text-lg font-black shadow-lg shadow-primary/20"
+                variant="primary"
+                onClick={handleSubmit}
+                disabled={isLoading || updateLoading || loadBrand}
+              >
+                <Check className="h-5 w-5 mr-2" />
+                {id ? t("update") : t("save")}
               </Button>
-            </div>
-
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="brand-name-ar" className="block text-start">
-                  اسم الماركة
-                </Label>
-                <Input
-                  id="brand-name-ar"
-                  value={brandNameAr}
-                  onChange={(e) => setBrandNameAr(e.target.value)}
-                  className="text-right"
-                  placeholder="مرسيدس بنز"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="brand-name-en" className="block text-end">
-                  Brand Name
-                </Label>
-                <Input
-                  id="brand-name-en"
-                  value={brandNameEn}
-                  onChange={(e) => setBrandNameEn(e.target.value)}
-                  placeholder="Mercedes Benz"
-                />
-              </div>
-            </div>
-          </>
-        )}
-
-        <Button
-          className="w-full"
-          variant="primary"
-          size="lg"
-          onClick={handleSubmit}
-          disabled={isLoading || updateLoading || loadBrand}
-        >
-          <Check className="h-4 w-4 mr-2" />
-          {id ? "حفظ التعديلات" : "إضافة ماركة"}
-        </Button>
+            </>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

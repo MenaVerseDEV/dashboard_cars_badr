@@ -9,7 +9,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useLocale } from "next-intl";
 import { useParams, useSearchParams } from "next/navigation";
-import { useGetAllModelsByBrandIdQuery } from "@/redux/features/model/modelApi";
+import { useGetAllCarsQuery } from "@/redux/features/cars/carsApi";
 import { AddModelDialog } from "@/components/Cars/Brands/AddModelDialog";
 import { AddModelTypeDialog } from "@/components/Cars/Brands/AddModelTypeDialog";
 
@@ -19,12 +19,12 @@ export default function Cars() {
   const params = useParams();
 
   useEffect(() => {
-    document.title = "Car Models Management | AlKhedr Dashboard";
+    document.title = "Cars Management | AlKhedr Dashboard";
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
       metaDescription.setAttribute(
         "content",
-        "Manage car models for specific brands in the AlKhedr dealership inventory"
+        "Manage cars for specific brands in the AlKhedr dealership inventory"
       );
     }
   }, []);
@@ -32,8 +32,8 @@ export default function Cars() {
   const brandName = searchParams.get("brandName");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useGetAllModelsByBrandIdQuery({
-    id: brandId,
+  const { data, isLoading } = useGetAllCarsQuery({
+    brandId: brandId,
     page,
     search,
   });
@@ -60,7 +60,7 @@ export default function Cars() {
       <section className="w-full flex items-center flex-col md:flex-row justify-between gap-3">
         <div className="flex-center w-full gap-4">
           <h1 className="text-36 w-full text-center md:text-start mb-1">
-            موديلات {brandName}
+            سيارات {brandName}
           </h1>
         </div>
 

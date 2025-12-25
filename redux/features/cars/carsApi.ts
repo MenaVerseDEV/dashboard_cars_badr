@@ -1,16 +1,16 @@
 import { combinedBaseApi, SuccessResponse } from "@/redux/app/baseApi";
-import { IPagination } from "@/types";
-import { ICarDetails, IDraftCar } from "@/types/cars";
-import { CreateCarMainInfoRequest } from "@/schemas/car/add-car-main-details.schema";
+import { ICarDetails } from "@/types/cars";
 
 export const carsApi = combinedBaseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllCars: builder.query<
       SuccessResponse<ICarDetails[]>,
-      { page: number; search: string }
+      { page: number; search: string; brandId?: string }
     >({
-      query: ({ page, search }) =>
-        `/cars?page=${page}&limit=10&search=${search}&sortBy=createdAt&sortOrder=desc&draftFilter=all`,
+      query: ({ page, search, brandId }) =>
+        `/cars?page=${page}&limit=10&search=${search}&sort=createdAt&order=desc&draftFilter=all${
+          brandId ? `&brandId=${brandId}` : ""
+        }`,
       providesTags: ["Car"],
     }),
 
@@ -49,7 +49,7 @@ export const carsApi = combinedBaseApi.injectEndpoints({
       { page: number; search: string }
     >({
       query: ({ page, search }) =>
-        `/cars?page=${page}&limit=10&search=${search}&sortBy=createdAt&sortOrder=desc&draftFilter=draft`,
+        `/cars?page=${page}&limit=10&search=${search}&sort=createdAt&order=desc&draftFilter=draft`,
       providesTags: ["Car"],
     }),
 

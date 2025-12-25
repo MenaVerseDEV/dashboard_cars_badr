@@ -59,9 +59,7 @@ export const useColumns = () => {
         <DataTableColumnHeader column={column} title={t("showModels")} />
       ),
       cell: ({ row }) => (
-        <Link
-          href={`/cars/brands/${row.original.id}?brandName=${row.original.name}`}
-        >
+        <Link href={`/cars/brands/${row.original.id}`}>
           <Button
             size="sm"
             variant="outline"
